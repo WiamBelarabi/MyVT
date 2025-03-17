@@ -1,0 +1,24 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+.sidebar {
+    height: 100%;
+    width: 200px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #dbcece;
+    padding-top: 20px;
+}
+.sidebar a, h1{
+    padding: 10px 15px;
+    text-decoration: none;
+    color: rgb(10, 10, 10);
+    display: flex;
+    align-items: center;    
+}
+.sidebar a:hover{
+    background-color: #9b8080;
+}
