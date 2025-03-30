@@ -55,35 +55,21 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
             $this->SetY(50); // Adjust depending on your header height
         }
         public function Footer() {
-            // Set Y position for footer (15 units from the bottom of the page)
-            $this->SetY(-15); // Adjust this value based on footer height
-            
-            // Set the font for the footer text (italicized and smaller font size)
-            $this->SetFont('helvetica', 'I', 8); 
-    
-            // Footer text (content that will appear at the bottom of the page)
-            $footerText = 'École Nationale des Sciences Appliquées. Complexe universitaire Al Qods, BP 669 - Oujda - Tél : 05 36 50 54 70/71 - Fax : 05 36 50 54 72 - Email : administration.ensao@ump.ac.ma - Site web : ensao.ump.ma';
-    
-            // Write footer text with HTML (you can also add <br> for line breaks or HTML styling)
-            $htmlFooter = '<div style="text-align:center; font-size:8pt;">' . $footerText . '</div>';
-            
-            // Write the HTML content for the footer
-            $this->writeHTML($htmlFooter, true, false, true, false, '');
-        }
-        
-        
+            $this->SetY(-15);
+            $this->SetFont('helvetica', 'I', 8);
+            $footerText = 'École Nationale des Sciences Appliquées - Complexe universitaire Al Qods, BP 669 - Oujda
+            Tél : 05 36 50 54 70/71 - Fax : 05 36 50 54 72 - Email : administration.ensao@ump.ac.ma - Site web : ensao.ump.ma';
+            $this->MultiCell(0, 10, $footerText, 0, 'C', 0, 1);
+        }   
     }
     // Générer le PDF
     $pdf = new MyPDF();
     $pdf->SetMargins(10, 50, 10); // Left, TOP (increased), Right margins
     $pdf->SetHeaderMargin(10); 
-    $pdf->SetAutoPageBreak(true, 15); 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('MyVT');
     $pdf->SetTitle('Liste des étudiants CP2');
-    $pdf->setPrintHeader(true);
-    $pdf->setPrintFooter(false);
-
+    
     foreach ($salles as $salle => $etudiants) {
         // Diviser les étudiants en deux colonnes
         $total = count($etudiants);

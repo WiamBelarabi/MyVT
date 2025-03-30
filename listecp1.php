@@ -53,17 +53,22 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
             // Set the Y position to avoid overlap with the header content
             $this->SetY(50); // Adjust depending on your header height
         }
+        public function Footer() {
+            $this->SetY(-15);
+            $this->SetFont('helvetica', 'I', 8);
+            $footerText = 'École Nationale des Sciences Appliquées - Complexe universitaire Al Qods, BP 669 - Oujda
+            Tél : 05 36 50 54 70/71 - Fax : 05 36 50 54 72 - Email : administration.ensao@ump.ac.ma - Site web : ensao.ump.ma';
+            $this->MultiCell(0, 10, $footerText, 0, 'C', 0, 1);
+        }
         
     }
     $pdf = new MyPDF();
     $pdf->SetMargins(10, 50, 10); // Left, TOP (increased), Right margins
-    $pdf->SetHeaderMargin(10); // for header
-    $pdf->SetAutoPageBreak(true, 20); 
+    $pdf->SetHeaderMargin(10); 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('MyVT');
     $pdf->SetTitle('Liste des étudiants CP1');
-    $pdf->setPrintHeader(true);
-    $pdf->setPrintFooter(false);
+   
     //organiser le haut de la page
 
 

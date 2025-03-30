@@ -10,11 +10,11 @@
     <div class='sidebar'>
         <h1>My VT</h1>
         <a href="accueil.php" class="nav-item" active >Accueil</a>
-        <a href="accueil.php" class="nav-item">Planning des devoirs</a>
+        <a href="planning.php" class="nav-item">Planning global</a>
         <a href="accueil.php" class="nav-item">PV de présence</a>
         <a href="listecp1.php" class="nav-item">Liste des CP1</a>
         <a href="listecp2.php" class="nav-item">Liste des CP2</a>
-        <a href="accueil.php" class="nav-item">Avis de surveillance</a>
+        <a href="controle.php" class="nav-item">Controle de présence</a>
         <a href="accueil.php" class="nav-item">Cordination et surveillance</a>
         <a href="logout.php" class="nav-item">Logout</a>
     </div>
