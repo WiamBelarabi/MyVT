@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
     // Générer le PDF
     $pdf = new MyPDF();
     $pdf->SetMargins(10, 50, 10); // Left, TOP (increased), Right margins
-    $pdf->SetHeaderMargin(10); 
+    $pdf->SetHeaderMargin( 7); 
     $pdf->SetCreator(PDF_CREATOR);
     $pdf->SetAuthor('MyVT');
     $pdf->SetTitle('Liste des étudiants CP2');
