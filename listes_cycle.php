@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         $moitie = ceil($total / 2);
         $gauche = array_slice($etudiants, 0, $moitie);
         $droite = array_slice($etudiants, $moitie);
-        $html ='<h4 style="text-align:center;">Filière : Cycle ingénieur -'. htmlspecialchars($filiere) . '  </h4>
+        $html ='<h4 style="text-align:center;">Filière : Cycle ingénieur - '. htmlspecialchars($filiere) . '  </h4>
         <p style="text-align:center;font-size:12px;">Liste des étudiants - Salle ' . htmlspecialchars($salle) . '</p>';
 
         // Générer le tableau HTML avec deux colonnes
