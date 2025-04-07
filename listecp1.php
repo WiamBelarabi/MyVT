@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         $gauche = array_slice($etudiants, 0, $moitie);
         $droite = array_slice($etudiants, $moitie);
         $html ='<h4 style="text-align:center;">CP1</h4>
-        <p style="text-align:center;font-size:13px;">Liste des étudiants-Salle ' . htmlspecialchars($salle) . '</p>
+        <p style="text-align:center;font-size:13px;">Liste des étudiants - Salle ' . htmlspecialchars($salle) . '</p>
         <h4 style="text-align:center;">Filière : Cycle Préparatoire - Sciences et Techniques pour l\'ingénieur <br> Première année</h4>';
 
         // Générer le tableau HTML avec deux colonnes
