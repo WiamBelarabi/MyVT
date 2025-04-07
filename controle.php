@@ -39,7 +39,7 @@
                 $heureValue = trim($data[3][$heureCol] ?? '');
         
                 // lignes 5 à 17
-                for ($i = 4; $i <= 16; $i++) {
+                for ($i = 4; $i <= 43; $i++) {
                     $filiere = trim($data[$i][2] ?? '');
                     $salle = trim($data[$i][5] ?? '');
                     //controle
