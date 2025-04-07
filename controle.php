@@ -7,64 +7,57 @@
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
 
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
+        $today = date('d/m/Y'); 
         $file_tmp = $_FILES['file']['tmp_name'];
         
         // Charger le fichier Excel
         $spreadsheet = IOFactory::load($file_tmp);
         
-        // Get the number of sheets in the workbook
+        //nbr de page du classeur
         $sheetCount = $spreadsheet->getSheetCount();
         
-        // Set the number of sheets you want to include (e.g., the first 10 sheets)
-        $includeSheetCount = 10; // Change this value based on the number of sheets you want to include
+        // nombre de pages à utiliser
+        $includedSheets = 12; 
         
-        $cordinateur = [];
-
-        // Loop through each sheet, process the first $includeSheetCount sheets
-        for ($sheetIndex = 0; $sheetIndex < $includeSheetCount; $sheetIndex++) {
+        $controle = [];
+        
+        //initialiser chaque heure pour son controle
+        $heureCols = [
+            7 => 19, // H -> T
+            8 => 20, // I -> U
+            9 => 21, // J -> V
+            10 => 22 // K -> W
+        ];
+        // boucle sur chaque page
+        for ($sheetIndex = 0; $sheetIndex < $includedSheets; $sheetIndex++) {
             $sheet = $spreadsheet->getSheet($sheetIndex);
-            
-            // Skip this sheet if it's beyond the include range
-            if ($sheetIndex >= $includeSheetCount) {
-                continue; // Skip the current iteration and move to the next sheet
-            }
-
             $data = $sheet->toArray();
-            
-            // Process data for the current sheet
-            foreach ($data as $i => $row) {
-                $cord = '';
-
-                // cordinateur
-                if ($i >= 4 && $i <= 10) {
-                    $cord = trim($row[19] ?? '');
-                }
-                if ($i >= 11 && $i <= 16) {
-                    $cord = trim($row[21] ?? '');
-                }
-                // date
-                $date = trim($data[1][2] ?? '');
-                // heure
-                $heure = '';
-                if ($i === 3) {
-                    for ($j = 7; $j < 11; $j++) {
-                        $heure .= ' ' . trim($row[$j] ?? '');
+            //date 
+            $date = trim($data[0][2] ?? '') . ' ' . trim($data[1][2] ?? '');
+            // extrère les info
+            foreach ($heureCols as $heureCol => $controlCol) {
+                $heureValue = trim($data[3][$heureCol] ?? '');
+        
+                // lignes 5 à 17
+                for ($i = 4; $i <= 16; $i++) {
+                    $filiere = trim($data[$i][2] ?? '');
+                    $salle = trim($data[$i][5] ?? '');
+                    //controle
+                    $contr = trim($data[$i][$controlCol] ?? '');
+        
+                    if (!empty($contr)) {
+                        $controle[] = [
+                            'date' => $date,
+                            'heure' => $heureValue,
+                            'filiere' => $filiere,
+                            'salle' => $salle,
+                            'controle' => $contr
+                        ];
                     }
-                }
-                $filiere = trim($row[2] ?? '');
-                $salle = trim($row[5] ?? '');
-
-                if (!empty($cord)) {
-                    $cordinateur[$cord][] = [
-                        'date' => $date,
-                        'heure' => $heure,
-                        'filiere' => $filiere,
-                        'salle' => $salle
-                    ];
                 }
             }
         }
-
+        
         class MyPDF extends TCPDF {
             // Header
             public function Header() {
@@ -91,8 +84,12 @@
                 $this->MultiCell(0, 10, $footerText, 0, 'C', 0, 1);
             }
         }
-
-        // ====== Generate PDF ======
+        //organiser selon le controleur 
+        $grouped = [];
+        foreach ($controle as $entry) {
+            $grouped[$entry['controle']][] = $entry;
+        }
+        // ====== Generer PDF ======
         $pdf = new MyPDF();
         $pdf->SetMargins(10, 50, 10); 
         $pdf->SetHeaderMargin(7); 
@@ -100,9 +97,11 @@
         $pdf->SetAuthor('MyVT');
         $pdf->SetTitle('contrôle de présence');
 
-        foreach ($cordinateur as $cord => $entries) {
-            $html = '<p style="text-align:center;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
-            <p style="text-align:center;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($cord) .'</strong></p><br>
+        //tableau
+        foreach ($grouped as $contr => $entries) {
+            $html = '<p style="text-align:right;">Oujda le '. date('d/m/Y').'<br></p>
+            <p style="text-align:center;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
+            <p style="text-align:center;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($contr) .'</strong></p><br>
             <p><strong><br>Objet: </strong>contrôle de présence : Devoirs survéillés n°2 Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer au contrôle de présence lors des Devoirs survéillés n°2 Semestre 1, conformément au tableau ci-dessous:</p>
             <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;">
             <thead>
@@ -116,6 +115,7 @@
             <tbody>';
             
             foreach ($entries as $entry) {
+                
                 $html .= '<tr>
                             <td style="width:30%; text-align:center;">' . htmlspecialchars($entry['date']) . '</td>
                             <td style="width:20%; text-align:center;">' . htmlspecialchars($entry['heure']) . '</td>
