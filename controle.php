@@ -1,6 +1,7 @@
 <?php
-    include("navbar.php");
     ob_start();
+
+    include("navbar.php");
     require 'vendor/autoload.php';
 
     use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -128,7 +129,7 @@
             $pdf->AddPage();
             $pdf->writeHTML($html, true, false, true, false, '');
         }
-
+        ob_end_clean();
         $pdf->Output('contrôle_de_présence.pdf', 'I');
     } else {
         echo "";

@@ -1,6 +1,7 @@
 <?php
-require 'navbar.php'; 
 ob_start();
+
+require 'navbar.php'; 
 require 'vendor/autoload.php';
 
 use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -94,6 +95,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         $pdf->AddPage();
         $pdf->writeHTML($html, true, false, true, false, '');
     }
+    ob_end_clean();
+
     // Afficher le PDF dans le navigateur
     $pdf->Output('liste_cp1.pdf', 'I');
 } else {
