@@ -1,6 +1,8 @@
 {
     "require": {
         "tecnickcom/tcpdf": "^6.8",
-        "phpoffice/phpspreadsheet": "^2.1"
+        "phpoffice/phpspreadsheet": "^2.1",
+        "chillerlan/php-qrcode": "^5.0",
+        "endroid/qr-code": "^4.8"
     }
 }
