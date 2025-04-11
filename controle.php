@@ -6,7 +6,7 @@
 
     use PhpOffice\PhpSpreadsheet\IOFactory;
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
-
+    
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         $today = date('d/m/Y'); 
         $file_tmp = $_FILES['file']['tmp_name'];
@@ -38,11 +38,15 @@
             // extrère les info
             foreach ($heureCols as $heureCol => $controlCol) {
                 $heureValue = trim($data[3][$heureCol] ?? '');
-        
-                // lignes 5 à 17
+
+                // toutes les lignes
                 for ($i = 4; $i <= 43; $i++) {
                     $filiere = trim($data[$i][2] ?? '');
                     $salle = trim($data[$i][5] ?? '');
+                    $matiere = trim($data[$i][$heureCol] ?? '');
+                    if (empty($matiere)) {
+                        continue;
+                    }
                     //controle
                     $contr = trim($data[$i][$controlCol] ?? '');
         
