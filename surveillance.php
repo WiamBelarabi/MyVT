@@ -94,19 +94,19 @@
             }
         }
 
-    // ---------- AJOUTER LES COORDINATEURS DANS $surveillant ----------
-    foreach ($coordData as $coordName => $entries) {
-        foreach ($entries as $entry) {
-            $surveillant[$coordName][] = [
-                'date' => $entry['date'],
-                'heure' => $entry['heure'],
-                'filiere' => $entry['filiere'],
-                'matiere' => $entry['matiere'],
-                'salle' => implode(', ', $entry['salles']),
-                'mission' => $entry['mission']
-            ];
+        // ---------- AJOUTER LES COORDINATEURS DANS $surveillant ----------
+        foreach ($coordData as $coordName => $entries) {
+            foreach ($entries as $entry) {
+                $surveillant[$coordName][] = [
+                    'date' => $entry['date'],
+                    'heure' => $entry['heure'],
+                    'filiere' => $entry['filiere'],
+                    'matiere' => $entry['matiere'],
+                    'salle' => implode(', ', $entry['salles']),
+                    'mission' => $entry['mission']
+                ];
+            }
         }
-    }
 
         class MyPDF extends TCPDF {
             // Header

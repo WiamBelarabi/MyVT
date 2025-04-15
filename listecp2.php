@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
     
     // Organiser les données par salle
     $salles = [];
-    foreach ($data as $row) {
+    foreach ($data as $i => $row) {
+        if ($i < 1) continue;
         $numero = $row[1];  
         $cne = $row[2];    
         $nom = $row[3];    
