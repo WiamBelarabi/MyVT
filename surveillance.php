@@ -187,19 +187,272 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Importer un fichier Excel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body{
+           .black-bar {
+            width: 100%;
+            height: 2px;
+            background-color: #000;
+            margin: 20px 0;
+            padding: 0;
+            border: none;
+        }
+        :root {
+            --primary-color: #166bb9;
+            --secondary-color: #f8f9fa;
+            --accent-color: #e3f2fd;
+            --text-color: #333;
+            --border-color: #dee2e6;
+            --success-color: #28a745;
+            --hover-color: #0056b3;
+        }
+        
+        body {
             margin-left: 200px; /* Même largeur que la navbar */
             padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 16px;
+        }
+        
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 30px;
+            border: 2px dashed var(--border-color);
+            border-radius: 8px;
+            background-color: var(--accent-color);
+            transition: all 0.3s ease;
+            margin-bottom: 30px;
+        }
+        
+        .upload-section:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .file-icon {
+            font-size: 48px;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            margin: 20px 0;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .file-input {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+        
+        .file-label {
+            display: inline-block;
+            padding: 12px 24px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        
+        .file-label:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .file-name {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .submit-btn {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 0 auto;
+            padding: 12px;
+            background-color: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+        
+        .submit-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        .instructions h3 {
+            margin-top: 0;
+            color: var(--primary-color);
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                margin-left: 0;
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            .upload-section {
+                padding: 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <p>Importer un fichier Excel :</p><br>
-    <form action="surveillance.php" method="post" enctype="multipart/form-data">
-        <label for="file">Choisissez un fichier Excel :</label>
-        <input type="file" name="file" id="file" accept=".xlsx, .xls" required><br>
-        <button type="submit">Générer PDF</button>
-    </form>
+    <div class="container">
+        <div class="header">
+            <h1>Génération de surveillance et coordination</h1>
+            <p>Importez un fichier Excel pour générer automatiquement les documents de surveillance et coordination</p>
+        </div>
+        
+        <form action="surveillance.php" method="post" enctype="multipart/form-data" id="upload-form">
+            <div class="upload-section" id="drop-area">
+                <i class="fas fa-file-excel file-icon"></i>
+                <p>Glissez-déposez votre fichier Excel ici ou cliquez pour sélectionner</p>
+                
+                <div class="file-input-wrapper">
+                    <label for="file" class="file-label">
+                        <i class="fas fa-upload"></i> Choisir un fichier
+                    </label>
+                    <input type="file" name="file" id="file" class="file-input" accept=".xlsx, .xls" required>
+                    <div class="file-name" id="file-name">Aucun fichier sélectionné</div>
+                </div>
+            </div>
+            
+            <button type="submit" class="submit-btn" id="submit-btn" disabled>
+                <i class="fas fa-file-pdf"></i> Générer PDF
+            </button>
+        </form>
+        
+        <div class="instructions">
+            <h3>Instructions</h3>
+            <ul>
+                <li>Le fichier doit être au format Excel (.xlsx ou .xls)</li>
+                <li>Assurez-vous que le fichier contient les informations de contrôle de présence dans le format attendu</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Script pour afficher le nom du fichier sélectionné et activer le bouton
+        document.getElementById('file').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Aucun fichier sélectionné';
+            document.getElementById('file-name').textContent = fileName;
+            
+            // Activer le bouton si un fichier est sélectionné
+            document.getElementById('submit-btn').disabled = !e.target.files[0];
+        });
+        
+        // Fonctionnalité de glisser-déposer
+        const dropArea = document.getElementById('drop-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropArea.classList.add('highlight');
+            dropArea.style.borderColor = 'var(--primary-color)';
+            dropArea.style.backgroundColor = '#d1e7fc';
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('highlight');
+            dropArea.style.borderColor = 'var(--border-color)';
+            dropArea.style.backgroundColor = 'var(--accent-color)';
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                document.getElementById('file').files = files;
+                const event = new Event('change');
+                document.getElementById('file').dispatchEvent(event);
+            }
+        }
+    </script>
 </body>
 </html>
