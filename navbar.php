@@ -29,7 +29,7 @@
                 <i class="fas fa-calendar-alt"></i>
                 <span>Planning global</span>
             </a>
-            <a href="accueil.php" class="nav-item">
+            <a href="pv_cp.php" class="nav-item">
                 <i class="fas fa-clipboard-check"></i>
                 <span>PV de présence CP</span>
             </a>
