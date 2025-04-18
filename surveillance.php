@@ -144,9 +144,9 @@
         //tableau
         foreach($surveillant as $surv =>$entries){
             $html = '<p style="text-align:right;">Oujda le '. date('d/m/Y').'<br></p>
-            <p style="text-align:center;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
-            <p style="text-align:center;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($surv) .'</strong></p><br>
-            <p><strong><br>Objet: </strong>Surveillance et coordination des Devoirs survéillés n°2 Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la coordination des Devoirs survéillés n°2 Semestre 1, conformément au tableau ci-dessous:</p>
+            <p style="text-align:center;font-size: 12px;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
+            <p style="text-align:center;font-size: 12px;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($surv) .'</strong></p><br>
+            <p style="font-size: 12px;"><strong><br>Objet: </strong>Surveillance et coordination des Devoirs survéillés n°2 Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la coordination des Devoirs survéillés n°2 Semestre 1, conformément au tableau ci-dessous:</p>
             <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;">
             <thead>
                 <tr style="background-color:#166bb9; color:white;">
@@ -394,7 +394,7 @@
             <h3>Instructions</h3>
             <ul>
                 <li>Le fichier doit être au format Excel (.xlsx ou .xls)</li>
-                <li>Assurez-vous que le fichier contient les informations de contrôle de présence dans le format attendu</li>
+                <li>Assurez-vous que le fichier contient les informations de surveillance et coordination dans le format attendu</li>
             </ul>
         </div>
     </div>
