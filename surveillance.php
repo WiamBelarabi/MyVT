@@ -111,20 +111,18 @@
         class MyPDF extends TCPDF {
             // Header
             public function Header() {
-                $this->SetFont('dejavusans', '', 12);
-                $html = '
+            $this->SetFont('dejavusans', '', 12);
+            $html = '
                 <table>
                     <tr>
-                        <td style="font-size:12px; width:35%;">Royaume du Maroc<br>Université Mohamed Premier<br>École Nationale des Sciences Appliquées<br>Oujda</td>
-                        <td style=" width:33%;"><img src="resources/ensao_logo.png" style="width: 150px; height: auto;" /></td>
-                        <td style="text-align:right ; width:32%; font-size:12px;">المملكة المغربية<br>جامعة محمد الأول<br>المدرسة الوطنية للعلوم التطبيقية<br>وجدة</td>
+                        <td style="font-size:10px;width:40%;">Royaume du Maroc<br>Université Mohamed Premier<br>École Nationale des Sciences Appliquées<br>Oujda</td>
+                        <td style="width:30%;"><img src="resources/ensao_logo.png" style="width: 120px; height: 61px;" /></td>
+                        <td style="text-align:right ;font-size:11px; width:30%;">المملكة المغربية<br>جامعة محمد الأول<br>المدرسة الوطنية للعلوم التطبيقية<br>وجدة</td>
                     </tr>
-                </table>';
-                
-                $this->writeHTML($html, true, false, true, false, '');
-                $this->SetY(50);
+                </table>';        
+            $this->writeHTML($html, true, false, true, false, '');
+            $this->SetY(50);
             }
-
             // Footer
             public function Footer() {
                 $this->SetY(-15);

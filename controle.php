@@ -66,47 +66,18 @@
         class MyPDF extends TCPDF {
             // Header
             public function Header() {
-                // Définir la police pour le texte
                 $this->SetFont('dejavusans', '', 12);
-                
-                // Position Y initiale
-                $startY = 10;
-                
-                // Texte français à gauche
-                $this->SetXY(10, $startY);
-                $this->Cell(80, 6, 'Royaume du Maroc', 0, 2, 'L');
-                $this->Cell(80, 6, 'Université Mohamed Premier', 0, 2, 'L');
-                $this->Cell(80, 6, 'École Nationale des Sciences Appliquées', 0, 2, 'L');
-                $this->Cell(80, 6, 'Oujda', 0, 2, 'L');
-                
-                // Logo au centre
-                $logoPath = 'resources/ensao_logo.png';
-                $this->Image($logoPath, 85, $startY, 40, 30, '', '', '', false, 300, '', false, false, 0);
-                
-                // Texte arabe à droite
-                $this->SetXY(120, $startY);
-                $this->Cell(80, 6, 'المملكة المغربية', 0, 2, 'R');
-                $this->Cell(80, 6, 'جامعة محمد الأول', 0, 2, 'R');
-                $this->Cell(80, 6, 'المدرسة الوطنية للعلوم التطبيقية', 0, 2, 'R');
-                $this->Cell(80, 6, 'وجدة', 0, 2, 'R');
-                
-                // Ligne horizontale en bas de l'en-tête
-                $this->SetY($startY + 35);
-                $this->SetDrawColor(0, 0, 0);
-                $this->Line(10, $this->GetY(), $this->getPageWidth() - 10, $this->GetY());
-                
-                // Position pour le contenu principal
-                
-                $this->SetY($this->GetY() + 5);
-                // Barre horizontale épaisse
-            $barY = $startY + 35;
-            $barHeight = 1; // Hauteur de la barre en mm
-            $this->SetFillColor(0, 0, 0); // Couleur noire
-            $this->Rect(0, $barY, $this->getPageWidth(), $barHeight, 'F'); // 'F' pour remplissage
-
-            // Position pour le contenu principal
-                $this->SetY($barY + $barHeight + 5);
-            }
+                $html = '
+                    <table>
+                        <tr>
+                            <td style="font-size:10px;width:40%;">Royaume du Maroc<br>Université Mohamed Premier<br>École Nationale des Sciences Appliquées<br>Oujda</td>
+                            <td style="width:30%;"><img src="resources/ensao_logo.png" style="width: 120px; height: 61px;" /></td>
+                            <td style="text-align:right ;font-size:11px; width:30%;">المملكة المغربية<br>جامعة محمد الأول<br>المدرسة الوطنية للعلوم التطبيقية<br>وجدة</td>
+                        </tr>
+                    </table>';        
+                $this->writeHTML($html, true, false, true, false, '');
+                $this->SetY(50);
+                }
              
                   // Footer
             public function Footer() {

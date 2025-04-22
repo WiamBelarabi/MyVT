@@ -39,21 +39,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
     }
     class MyPDF extends TCPDF {
         public function Header() {
-            $this->SetFont('dejavusans', '', 12); // this part is for the arabic text
-
+            $this->SetFont('dejavusans', '', 12);
             $html = '
                 <table>
                     <tr>
-                        <td style="font-size:12px;">Royaume du Maroc<br>Université Mohamed Premier<br>École Nationale des Sciences Appliquées<br>Oujda</td>
-                        <td><img src="resources/ensao_logo.png" style="width: 200px; height: 99px;" /></td>
-                        <td style="text-align:right ;font-size:12px;">المملكة المغربية<br>جامعة محمد الأول<br>المدرسة الوطنية للعلوم التطبيقية<br>وجدة</td>
+                        <td style="font-size:10px;width:40%;">Royaume du Maroc<br>Université Mohamed Premier<br>École Nationale des Sciences Appliquées<br>Oujda</td>
+                        <td style="width:30%;"><img src="resources/ensao_logo.png" style="width: 120px; height: 61px;" /></td>
+                        <td style="text-align:right ;font-size:11px; width:30%;">المملكة المغربية<br>جامعة محمد الأول<br>المدرسة الوطنية للعلوم التطبيقية<br>وجدة</td>
                     </tr>
                 </table>';        
-            // Write HTML 
             $this->writeHTML($html, true, false, true, false, '');
-        
-            $this->SetY(50); // Adjust depending on your header height
-        }
+            $this->SetY(50);
+            }
         public function Footer() {
             $this->SetY(-15);
             $this->SetFont('helvetica', 'I', 8);
