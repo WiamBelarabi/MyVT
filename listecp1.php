@@ -106,23 +106,23 @@ ob_end_flush();
  * Fonction pour générer un tableau en HTML
  */
 function genererTableauHTML($etudiants) {
-    $html = '<table border="0.5" cellpadding="2" cellspacing="0" style="width:100%; border-collapse:collapse;">
+    $html = '<table cellpadding="2" cellspacing="0" style="width:100%; border-collapse:collapse;">
                 <thead >
-                    <tr style="background-color:rgb(22, 107, 185); font-size: 7px;text-align:center; color:white; ">
-                        <th style="width:9%; ">N°</th>
-                        <th style="width:19%;">CNE</th>
-                        <th style="width:39%;">Nom</th>
-                        <th style="width:33%;">Prénom</th>
+                    <tr style="background-color:rgb(50, 112, 179); font-size: 7px;text-align:center; color:white; ">
+                        <th style="width:9%;border: 0.5px solid #7ba0eb; ">N°</th>
+                        <th style="width:19%;border: 0.5px solid #7ba0eb;">CNE</th>
+                        <th style="width:39%;border: 0.5px solid #7ba0eb;">Nom</th>
+                        <th style="width:33%;border: 0.5px solid #7ba0eb;">Prénom</th>
                     </tr>
                 </thead>
                 <tbody >';
 
     foreach ($etudiants as $etudiant) {
         $html .= '<tr style="font-size:6px; ">
-                    <td style="text-align:center;">' . htmlspecialchars($etudiant['numero']) . '</td>
-                    <td>' . htmlspecialchars($etudiant['cne']) . '</td>
-                    <td>' . htmlspecialchars($etudiant['nom']) . '</td>
-                    <td>' . htmlspecialchars($etudiant['prenom']) . '</td>
+                    <td style="text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($etudiant['numero']) . '</td>
+                    <td style="border: 0.5px solid #7ba0eb;">' . htmlspecialchars($etudiant['cne']) . '</td>
+                    <td style="border: 0.5px solid #7ba0eb;">' . htmlspecialchars($etudiant['nom']) . '</td>
+                    <td style="border: 0.5px solid #7ba0eb;">' . htmlspecialchars($etudiant['prenom']) . '</td>
                   </tr>';
     }
 

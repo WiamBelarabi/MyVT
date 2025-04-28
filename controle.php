@@ -107,13 +107,13 @@
             <p style="text-align:center;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
             <p style="text-align:center;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($contr) .'</strong></p><br>
             <p><strong><br>Objet: </strong>contrôle de présence : Devoirs survéillés n°2 Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer au contrôle de présence lors des Devoirs survéillés n°2 Semestre 1, conformément au tableau ci-dessous:</p>
-            <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;">
+            <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #7ba0eb;">
             <thead>
-                <tr style="background-color:#166bb9; color:white;">
-                    <th style="width:30%; text-align:center;">Date</th>
-                    <th style="width:20%; text-align:center;">Heure</th>
-                    <th style="width:30%; text-align:center;">Filière</th>
-                    <th style="width:20%; text-align:center;">Salle</th>
+                <tr style="background-color:rgb(50, 112, 179); color:white;">
+                    <th style="width:30%; text-align:center;border: 0.5px solid #7ba0eb;">Date</th>
+                    <th style="width:20%; text-align:center;border: 0.5px solid #7ba0eb;">Heure</th>
+                    <th style="width:30%; text-align:center;border: 0.5px solid #7ba0eb;">Filière</th>
+                    <th style="width:20%; text-align:center;border: 0.5px solid #7ba0eb;">Salle</th>
                 </tr>
             </thead>
             <tbody>';
@@ -121,10 +121,10 @@
             foreach ($entries as $entry) {
                 
                 $html .= '<tr>
-                            <td style="width:30%; text-align:center;">' . htmlspecialchars($entry['date']) . '</td>
-                            <td style="width:20%; text-align:center;">' . htmlspecialchars($entry['heure']) . '</td>
-                            <td style="width:30%; text-align:center;">' . htmlspecialchars($entry['filiere']) . '</td>
-                            <td style="width:20%; text-align:center;">' . htmlspecialchars($entry['salle']) . '</td>
+                            <td style="width:30%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['date']) . '</td>
+                            <td style="width:20%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['heure']) . '</td>
+                            <td style="width:30%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['filiere']) . '</td>
+                            <td style="width:20%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['salle']) . '</td>
                         </tr>';
             }
             $html .= '</tbody></table>'; 

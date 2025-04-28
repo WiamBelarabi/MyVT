@@ -145,26 +145,26 @@
             <p style="text-align:center;font-size: 12px;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
             <p style="text-align:center;font-size: 12px;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($surv) .'</strong></p><br>
             <p style="font-size: 12px;"><strong><br>Objet: </strong>Surveillance et coordination des Devoirs survéillés n°2 Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la coordination des Devoirs survéillés n°2 Semestre 1, conformément au tableau ci-dessous:</p>
-            <table border="1" cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;">
+            <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #7ba0eb;">
             <thead>
-                <tr style="background-color:#166bb9; color:white;">
-                    <th style="width:18%; text-align:center;">Date</th>
-                    <th style="width:15%; text-align:center;">Heure</th>
-                    <th style="width:13%; text-align:center;">Filière</th>
-                    <th style="width:25%; text-align:center;">Matière</th>
-                    <th style="width:12%; text-align:center;">Salle(s)</th>
-                    <th style="width:15%; text-align:center;">Mission</th>
+                <tr style="background-color:rgb(50, 112, 179); color:white;">
+                    <th style="width:18%; text-align:center;border: 0.5px solid #7ba0eb;">Date</th>
+                    <th style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">Heure</th>
+                    <th style="width:13%; text-align:center;border: 0.5px solid #7ba0eb;">Filière</th>
+                    <th style="width:25%; text-align:center;border: 0.5px solid #7ba0eb;">Matière</th>
+                    <th style="width:12%; text-align:center;border: 0.5px solid #7ba0eb;">Salle(s)</th>
+                    <th style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">Mission</th>
                 </tr>
             </thead>
             <tbody>';
             foreach ($entries as $entry) {
                 $html .= '<tr>
-                            <td style="width:18%; text-align:center;">' . htmlspecialchars($entry['date']) . '</td>
-                            <td style="width:15%; text-align:center;">' . htmlspecialchars($entry['heure']) . '</td>
-                            <td style="width:13%; text-align:center;">' . htmlspecialchars($entry['filiere']) . '</td>
-                            <td style="width:25%; text-align:center;">' . htmlspecialchars($entry['matiere']) . '</td>
-                            <td style="width:12%; text-align:center;">' . htmlspecialchars($entry['salle']) . '</td>
-                            <td style="width:15%; text-align:center;">' . htmlspecialchars($entry['mission']) . '</td>
+                            <td style="width:18%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['date']) . '</td>
+                            <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['heure']) . '</td>
+                            <td style="width:13%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['filiere']) . '</td>
+                            <td style="width:25%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['matiere']) . '</td>
+                            <td style="width:12%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['salle']) . '</td>
+                            <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['mission']) . '</td>
                         </tr>';
             }
             $html .= '</tbody></table>'; 

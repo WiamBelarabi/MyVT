@@ -77,7 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         <p style="text-align:center;font-size:12px;">Liste des étudiants - Salle ' . htmlspecialchars($salle) . '</p>';
 
         // Générer le tableau HTML avec deux colonnes
-        $html .= '<table border="0" cellpadding="5" cellspacing="5" style="width:100%;">
+        $html .= '<table  border="0" cellpadding="5" cellspacing="5" style="width:100%;">
                     <tr>
                         <td style="width:50%;">' . genererTableauHTML($gauche) . '</td>
                         <td style="width:50%;">' . genererTableauHTML($droite) . '</td>
@@ -101,23 +101,23 @@ ob_end_flush();
  */
 function genererTableauHTML($etudiants) {
     
-    $html = '<table border="0.5" cellpadding="4" cellspacing="0" style="width:100%; border-collapse:collapse;">
+    $html = '<table  cellpadding="4" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #7ba0eb;">
                 <thead>
-                    <tr style="background-color:rgb(22, 107, 185); font-size: 7px; color:white;text-align:center;">
-                        <th style="width:9%; text-align:center;">N°</th>
-                        <th style="width:20%;">CNE</th>
-                        <th style="width:40%;">Nom</th>
-                        <th style="width:31%;">Prénom</th>
+                    <tr style="background-color:rgb(50, 112, 179);font-size: 7px; color:white;text-align:center;">
+                        <th style="width:9%; text-align:center;border: 0.5px solid #7ba0eb;">N°</th>
+                        <th style="width:20%;border: 0.5px solid #7ba0eb;">CNE</th>
+                        <th style="width:40%;border: 0.5px solid #7ba0eb;">Nom</th>
+                        <th style="width:31%;border: 0.5px solid #7ba0eb;">Prénom</th>
                     </tr>
                 </thead>
                 <tbody>';
 
     foreach ($etudiants as $etudiant) {
         $html .= '<tr style="font-size:7px;">
-                    <td style="text-align:center;">' . htmlspecialchars($etudiant['numero']) . '</td>
-                    <td>' . htmlspecialchars($etudiant['cne']) . '</td>
-                    <td>' . htmlspecialchars($etudiant['nom']) . '</td>
-                    <td>' . htmlspecialchars($etudiant['prenom']) . '</td>
+                    <td style="text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($etudiant['numero']) . '</td>
+                    <td style="border: 0.5px solid #7ba0eb;">' . htmlspecialchars($etudiant['cne']) . '</td>
+                    <td style="border: 0.5px solid #7ba0eb;">' . htmlspecialchars($etudiant['nom']) . '</td>
+                    <td style="border: 0.5px solid #7ba0eb;">' . htmlspecialchars($etudiant['prenom']) . '</td>
                   </tr>';
     }
 
