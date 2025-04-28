@@ -25,10 +25,6 @@
                 <i class="fas fa-home"></i>
                 <span>Accueil</span>
             </a>
-            <a href="importation.php" class="nav-item">
-                <i class="fas fa-calendar-alt"></i>
-                <span>Importer les fichiers</span>
-            </a>
             <a href="planning.php" class="nav-item">
                 <i class="fas fa-calendar-alt"></i>
                 <span>Planning global</span>
