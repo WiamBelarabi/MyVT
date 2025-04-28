@@ -104,9 +104,9 @@
         //tableau
         foreach ($grouped as $contr => $entries) {
             $html = '<p style="text-align:right;">Oujda le '. date('d/m/Y').'<br></p>
-            <p style="text-align:center;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
-            <p style="text-align:center;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($contr) .'</strong></p><br>
-            <p><strong><br>Objet: </strong>contrôle de présence : Devoirs survéillés n°2 Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer au contrôle de présence lors des Devoirs survéillés n°2 Semestre 1, conformément au tableau ci-dessous:</p>
+            <p style="text-align:center;font-size: 12px;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
+            <p style="text-align:center;font-size: 12px;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($contr) .'</strong></p><br>
+            <p style="font-size: 12px;"><strong><br>Objet: </strong>contrôle de présence : Devoirs survéillés n°2 Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer au contrôle de présence lors des Devoirs survéillés n°2 Semestre 1, conformément au tableau ci-dessous:</p>
             <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #7ba0eb;">
             <thead>
                 <tr style="background-color:rgb(50, 112, 179); color:white;">
