@@ -1,7 +1,8 @@
 <?php
     ob_start();
+    session_start();
+
     include("navbar.php");
-    
     require 'vendor/autoload.php';
 
     use PhpOffice\PhpSpreadsheet\IOFactory;
@@ -111,32 +112,105 @@
         class MyPDF extends TCPDF {
             // Header
             public function Header() {
-            $this->SetFont('dejavusans', '', 12);
-            $html = '
-                <table>
-                    <tr>
-                        <td style="font-size:10px;width:40%;">Royaume du Maroc<br>Université Mohamed Premier<br>École Nationale des Sciences Appliquées<br>Oujda</td>
-                        <td style="width:30%;"><img src="resources/ensao_logo.png" style="width: 120px; height: 61px;" /></td>
-                        <td style="text-align:right ;font-size:11px; width:30%;">المملكة المغربية<br>جامعة محمد الأول<br>المدرسة الوطنية للعلوم التطبيقية<br>وجدة</td>
-                    </tr>
-                </table>';        
-            $this->writeHTML($html, true, false, true, false, '');
-            $this->SetY(50);
+                // Position initiale pour le contenu du header
+                $this->SetY(10);
+                $this->SetFont('dejavusans', '', 10); 
+    
+                // Contenu du header aligné 
+                $html = '
+                <table cellpadding="0" cellspacing="0" style="width: 100%; ">
+                        <tr>
+                            <td style="font-size:9.4px; width:37%; vertical-align:top; line-height:1.5;">
+                                Royaume du Maroc<br>
+                                Université Mohamed Premier<br>
+                                École Nationale des Sciences Appliquées<br>
+                                Oujda
+                            </td>
+                            <td style="width:33%; text-align:left; vertical-align:middle;">
+                                <img src="resources/ensao_logo.png"  style="width:140px;  display:block; margin:0 auto;">
+                            </td>
+                            <td style="text-align:right; font-size:11px; width:30%; vertical-align:top; direction:rtl; line-height:1.5;">
+                                المملكة المغربية<br>
+                                جامعة محمد الأول<br>
+                                المدرسة الوطنية للعلوم التطبيقية<br>
+                                وجدة
+                            </td>
+                        </tr>
+                    </table>';         
+                $this->writeHTML($html, true, false, true, false, '');
+                
+                // Calcul de la position Y après le contenu du header
+                $currentY = $this->GetY();
+                
+                // Barre effilée sous le texte (ajout de 6mm d'espace)
+                $barY = $currentY - 6;
+                $this->SetY($barY);
+                
+                $width = $this->getPageWidth() - $this->lMargin - $this->rMargin;
+                $xStart = $this->lMargin;
+                $steps = 100;
+                $maxThickness = 0.5;
+                
+                // Dessin de la barre effilée
+                for ($i = 0; $i <= $steps; $i++) {
+                    $ratio = $i / $steps;
+                    $distanceFromCenter = abs($ratio - 0.5) * 2;
+                    $thickness = $maxThickness * (1 - pow($distanceFromCenter, 2));
+                    
+                    $x1 = $xStart + $width * ($i / $steps);
+                    $x2 = $xStart + $width * (($i + 1) / $steps);
+                    
+                    $this->SetDrawColor(0, 0, 0);
+                    $this->SetLineWidth($thickness);
+                    $this->Line($x1, $this->GetY(), $x2, $this->GetY());
+                }
+                
+                // Réinitialiser l'épaisseur
+                $this->SetLineWidth(0.2);
+                
+                // Position finale après la barre
+                $this->SetY($barY + $maxThickness + 2);
             }
-            // Footer
-            public function Footer() {
-                $this->SetY(-15);
-                $this->SetFont('helvetica', 'I', 8);
+    
+            public function Footer() { 
+                $this->SetY(-20); // Ajusté pour laisser de l'espace pour la ligne et le texte
+            
+                // Position de la ligne très proche du texte
+                $lineY = $this->GetY() + 2; // Position juste au-dessus du texte
+                $width = $this->getPageWidth() - $this->lMargin - $this->rMargin;
+                $xStart = $this->lMargin;
+                $steps = 100;
+                $maxThickness = 0.5;
+            
+                for ($i = 0; $i <= $steps; $i++) {
+                    $ratio = $i / $steps;
+                    $distanceFromCenter = abs($ratio - 0.5) * 2;
+                    $thickness = $maxThickness * (1 - pow($distanceFromCenter, 2));
+            
+                    $x1 = $xStart + $width * ($i / $steps);
+                    $x2 = $xStart + $width * (($i + 1) / $steps);
+            
+                    $this->SetDrawColor(0, 0, 0);
+                    $this->SetLineWidth($thickness);
+                    $this->Line($x1, $lineY, $x2, $lineY);
+                }
+            
+                // Réinitialiser l'épaisseur
+                $this->SetLineWidth(0.2);
+            
+                // Positionnement du texte juste sous la ligne
+                $this->SetY($lineY + 1); // 1mm/2 mm sous la ligne
+                $this->SetFont('helvetica', '', 8);
                 $footerText = 'École Nationale des Sciences Appliquées - Complexe universitaire Al Qods, BP 669 - Oujda
-                Tél : 05 36 50 54 70/71 - Fax : 05 36 50 54 72 - Email : administration.ensao@ump.ac.ma - Site web : ensao.ump.ma';
+                 Tél : 05 36 50 54 70/71 - Fax : 05 36 50 54 72 - Email : administration.ensao@ump.ac.ma - Site web : ensao.ump.ma';
                 $this->MultiCell(0, 10, $footerText, 0, 'C', 0, 1);
-            }
+            }  
         }
         // ====== Generer PDF ======
         $pdf = new MyPDF();
-        $pdf->SetMargins(10, 50, 10); 
+        $pdf->SetMargins(10, 40, 10); 
         $pdf->SetHeaderMargin(7); 
-        $pdf->SetFont('helvetica', '', 10);
+        $pdf->SetFont('helvetica', '', 12);
         $pdf->SetAuthor('MyVT');
         $pdf->SetTitle('surveillance et coordination');
         //tableau
@@ -144,21 +218,24 @@
             $html = '<p style="text-align:right;">Oujda le '. date('d/m/Y').'<br></p>
             <p style="text-align:center;font-size: 12px;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
             <p style="text-align:center;font-size: 12px;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($surv) .'</strong></p><br>
-            <p style="font-size: 12px;"><strong><br>Objet: </strong>Surveillance et coordination des Devoirs survéillés n°2 Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la coordination des Devoirs survéillés n°2 Semestre 1, conformément au tableau ci-dessous:</p>
-            <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #7ba0eb;">
+            <p style="font-size: 12px;"><strong><br>Objet: </strong>Surveillance et Coordination des Devoirs Surveillés (DS 2) Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la surveillance et à la coordination des Devoirs Surveillés (DS 1), Semestre 2, conformément au tableau ci-dessous :</p>
+            <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #89a5d9;">
             <thead>
-                <tr style="background-color:rgb(50, 112, 179); color:white;">
-                    <th style="width:18%; text-align:center;border: 0.5px solid #7ba0eb;">Date</th>
-                    <th style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">Heure</th>
-                    <th style="width:13%; text-align:center;border: 0.5px solid #7ba0eb;">Filière</th>
-                    <th style="width:25%; text-align:center;border: 0.5px solid #7ba0eb;">Matière</th>
-                    <th style="width:12%; text-align:center;border: 0.5px solid #7ba0eb;">Salle(s)</th>
-                    <th style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">Mission</th>
+                <tr style="background-color:#4472c4; color:white;">
+                    <th style="width:18%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Date</th>
+                    <th style="width:15%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Heure</th>
+                    <th style="width:13%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Filière</th>
+                    <th style="width:25%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold; ">Matière</th>
+                    <th style="width:12%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Salle(s)</th>
+                    <th style="width:15%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Mission</th>
                 </tr>
             </thead>
             <tbody>';
             foreach ($entries as $entry) {
-                $html .= '<tr>
+               // $rowColor = ($rowIndex % 2 == 0) ? '#d9e1f2;' : 'white';
+                $rowColor = ($rowIndex % 2 == 0) ? '#d9e1f2;' : '#d9e1f2'; 
+                $rowIndex++; 
+                $html .= '<tr style="background-color: ' . $rowColor . ';">
                             <td style="width:18%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['date']) . '</td>
                             <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['heure']) . '</td>
                             <td style="width:13%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['filiere']) . '</td>
@@ -171,6 +248,23 @@
             
             $pdf->AddPage();
             $pdf->writeHTML($html, true, false, true, false, '');
+
+            // Ajout du QR code (Site ENSAO)
+            $qrText = "http://ensao.ump.ma/fr/actualite/planning-des-devoirs-surveilles-mi-semestre-2-2024-2025";
+            $style = array(
+                'border' => 0,
+                'vpadding' => 'auto',
+                'hpadding' => 'auto',
+                'fgcolor' => array(0, 0, 0),
+                'bgcolor' => false,
+                'module_width' => 1,
+                'module_height' => 1
+            );
+            
+            // Positionnement du QR code (left with 10mm sous le tableau)
+            $currentY = $pdf->GetY();
+            $pdf->write2DBarcode($qrText, 'QRCODE,L', ($pdf->getPageWidth() - 200) / 2, $currentY + 10, 40, 35, $style, 'N');
+        
         }
         ob_end_clean();
         $pdf->Output('surveillance_et_coordination.pdf', 'I');
@@ -369,7 +463,7 @@
             <p>Importez un fichier Excel pour générer automatiquement les documents de surveillance et coordination</p>
         </div>
         
-        <form action="surveillance.php" method="post" enctype="multipart/form-data" id="upload-form">
+        <form action="surveillance.php" method="post" enctype="multipart/form-data" id="upload-form" target="_blank">
             <div class="upload-section" id="drop-area">
                 <i class="fas fa-file-excel file-icon"></i>
                 <p>Glissez-déposez votre fichier Excel ici ou cliquez pour sélectionner</p>

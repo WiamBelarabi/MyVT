@@ -1,4 +1,9 @@
 <?php 
+session_start();
+if (!isset($_SESSION['logged_in']) || $_SESSION['logged_in'] !== true) {
+    header("Location: index.php"); // Redirection vers la page de login
+    exit();
+}
     require 'navbar.php'; 
 ?>
 <!DOCTYPE html>
