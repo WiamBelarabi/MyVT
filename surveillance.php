@@ -222,11 +222,11 @@
             <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #89a5d9;">
             <thead>
                 <tr style="background-color:#4472c4; color:white;">
-                    <th style="width:18%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Date</th>
+                    <th style="width:19%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Date</th>
                     <th style="width:15%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Heure</th>
-                    <th style="width:13%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Filière</th>
-                    <th style="width:25%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold; ">Matière</th>
-                    <th style="width:12%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Salle(s)</th>
+                    <th style="width:11%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Filière</th>
+                    <th style="width:23%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold; ">Matière</th>
+                    <th style="width:15%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Salle(s)</th>
                     <th style="width:15%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Mission</th>
                 </tr>
             </thead>
@@ -236,11 +236,11 @@
                 $rowColor = ($rowIndex % 2 == 0) ? '#d9e1f2;' : '#d9e1f2'; 
                 $rowIndex++; 
                 $html .= '<tr style="background-color: ' . $rowColor . ';">
-                            <td style="width:18%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['date']) . '</td>
+                            <td style="width:19%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['date']) . '</td>
                             <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['heure']) . '</td>
-                            <td style="width:13%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['filiere']) . '</td>
-                            <td style="width:25%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['matiere']) . '</td>
-                            <td style="width:12%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['salle']) . '</td>
+                            <td style="width:11%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['filiere']) . '</td>
+                            <td style="width:23%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['matiere']) . '</td>
+                            <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['salle']) . '</td>
                             <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['mission']) . '</td>
                         </tr>';
             }
