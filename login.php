@@ -1,4 +1,5 @@
 <?php
+    session_start();
     include('connection.php');
     if (isset($_POST['submit'])) {
         $username = $_POST['user'];
@@ -10,6 +11,8 @@
         $count = mysqli_num_rows($result);  
         
         if($count == 1){  
+            $_SESSION['logged_in'] = true;
+            $_SESSION['username'] = $username;
             header("Location: accueil.php");
         }  
         else{  

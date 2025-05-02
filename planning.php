@@ -1,5 +1,7 @@
 <?php
 ob_start();
+session_start();
+
 include("navbar.php");
 
 require 'vendor/autoload.php';
@@ -74,30 +76,117 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
 
     class MyPDF extends TCPDF {
         public function Header() {
-            $this->SetFont('dejavusans', '', 12);
+            // Position initiale pour le contenu du header
+            $this->SetY(10);
+            $this->SetFont('dejavusans', '', 10); 
+            // Ajout du QR code (Site ENSAO)
+            $qrText = "http://ensao.ump.ma/fr/actualite/planning-des-devoirs-surveilles-mi-semestre-2-2024-2025";
+            $style = array(
+                'border' => 0,
+                'vpadding' => 'auto',
+                'hpadding' => 'auto',
+                'fgcolor' => array(0, 0, 0),
+                'bgcolor' => false,
+                'module_width' => 1,
+                'module_height' => 1
+            );
+            // Position: 9mm from left, 31mm from top
+            $this->write2DBarcode($qrText, 'QRCODE,L', 9, 31, 35, 40, $style);
+
+            // Contenu du header aligné 
             $html = '
-                <table>
+            <table cellpadding="0" cellspacing="0" style="width: 100%; ">
                     <tr>
-                        <td style="font-size:10px;width:40%;">Royaume du Maroc<br>Université Mohamed Premier<br>École Nationale des Sciences Appliquées<br>Oujda</td>
-                        <td style="width:30%;"><img src="resources/ensao_logo.png" style="width: 120px; height: 61px;" /></td>
-                        <td style="text-align:right ;font-size:11px; width:30%;">المملكة المغربية<br>جامعة محمد الأول<br>المدرسة الوطنية للعلوم التطبيقية<br>وجدة</td>
+                        <td style="font-size:9.4px; width:37%; vertical-align:top; line-height:1.5;">
+                            Royaume du Maroc<br>
+                            Université Mohamed Premier<br>
+                            École Nationale des Sciences Appliquées<br>
+                            Oujda
+                        </td>
+                        <td style="width:33%; text-align:left; vertical-align:middle;">
+                            <img src="resources/ensao_logo.png"  style="width:140px;  display:block; margin:0 auto;">
+                        </td>
+                        <td style="text-align:right; font-size:11px; width:30%; vertical-align:top; direction:rtl; line-height:1.5;">
+                            المملكة المغربية<br>
+                            جامعة محمد الأول<br>
+                            المدرسة الوطنية للعلوم التطبيقية<br>
+                            وجدة
+                        </td>
                     </tr>
-                </table>';        
+                </table>';         
             $this->writeHTML($html, true, false, true, false, '');
-            $this->SetY(50);
+            
+            // Calcul de la position Y après le contenu du header
+            $currentY = $this->GetY();
+            
+            // Barre effilée sous le texte (ajout de 6mm d'espace)
+            $barY = $currentY - 6;
+            $this->SetY($barY);
+            
+            $width = $this->getPageWidth() - $this->lMargin - $this->rMargin;
+            $xStart = $this->lMargin;
+            $steps = 100;
+            $maxThickness = 0.5;
+            
+            // Dessin de la barre effilée
+            for ($i = 0; $i <= $steps; $i++) {
+                $ratio = $i / $steps;
+                $distanceFromCenter = abs($ratio - 0.5) * 2;
+                $thickness = $maxThickness * (1 - pow($distanceFromCenter, 2));
+                
+                $x1 = $xStart + $width * ($i / $steps);
+                $x2 = $xStart + $width * (($i + 1) / $steps);
+                
+                $this->SetDrawColor(0, 0, 0);
+                $this->SetLineWidth($thickness);
+                $this->Line($x1, $this->GetY(), $x2, $this->GetY());
+            }
+            
+            // Réinitialiser l'épaisseur
+            $this->SetLineWidth(0.2);
+            
+            // Position finale après la barre
+            $this->SetY($barY + $maxThickness + 2);
         }
-        public function Footer() {
-            $this->SetY(-15);
-            $this->SetFont('helvetica', 'I', 8);
+
+        public function Footer() { 
+            $this->SetY(-20); // Ajusté pour laisser de l'espace pour la ligne et le texte
+        
+            // Position de la ligne très proche du texte
+            $lineY = $this->GetY() + 2; // Position juste au-dessus du texte
+            $width = $this->getPageWidth() - $this->lMargin - $this->rMargin;
+            $xStart = $this->lMargin;
+            $steps = 100;
+            $maxThickness = 0.5;
+        
+            for ($i = 0; $i <= $steps; $i++) {
+                $ratio = $i / $steps;
+                $distanceFromCenter = abs($ratio - 0.5) * 2;
+                $thickness = $maxThickness * (1 - pow($distanceFromCenter, 2));
+        
+                $x1 = $xStart + $width * ($i / $steps);
+                $x2 = $xStart + $width * (($i + 1) / $steps);
+        
+                $this->SetDrawColor(0, 0, 0);
+                $this->SetLineWidth($thickness);
+                $this->Line($x1, $lineY, $x2, $lineY);
+            }
+        
+            // Réinitialiser l'épaisseur
+            $this->SetLineWidth(0.2);
+        
+            // Positionnement du texte juste sous la ligne
+            $this->SetY($lineY + 1); // 1 mm sous la ligne
+            $this->SetFont('helvetica', '', 8);
             $footerText = 'École Nationale des Sciences Appliquées - Complexe universitaire Al Qods, BP 669 - Oujda
-            Tél : 05 36 50 54 70/71 - Fax : 05 36 50 54 72 - Email : administration.ensao@ump.ac.ma - Site web : ensao.ump.ma';
+             Tél : 05 36 50 54 70/71 - Fax : 05 36 50 54 72 - Email : administration.ensao@ump.ac.ma - Site web : ensao.ump.ma';
             $this->MultiCell(0, 10, $footerText, 0, 'C', 0, 1);
-        }   
+        }     
     }
 
     // ====== Generer PDF ======
     $pdf = new MyPDF();
-    $pdf->SetMargins(10, 50, 10); 
+    $pdf->SetMargins(10, 45, 10); 
     $pdf->SetHeaderMargin(7); 
     $pdf->SetFont('helvetica', '', 10);
     $pdf->SetAuthor('MyVT');
@@ -105,39 +194,87 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
 
     // Génération du PDF pour chaque filière
     foreach ($planningByFiliere as $filiere => $entries) {
-        $pdf->AddPage(); // Ajouter une nouvelle page pour chaque filière
-        $html = '<p style="text-align:center;font-size:15px;"><strong>PLANNING <span style="color: #FF0000;">DÉFINITIF</span> DES EXAMENS <br> SEMESTRE 1, JANVIER 2025 </strong></p>
-        <br><p style="text-align:center;font-size:12px;"><strong>'. htmlspecialchars($filiere) .'</strong></p>';
+        $pdf->AddPage();
+    
+        //  Filières ensao
+        $nomsFilieres = [
+            'STPI1' => 'Cycle Préparatoire - Sciences et Techniques pour l\'Ingénieur<br>Première année (STPI1)',
+            'STPI2' => 'Cycle Préparatoire - Sciences et Techniques pour l\'Ingénieur<br>Deuxième année (STPI2)',
+            'GINF1' => 'Cycle Ingénieur - Génie Informatique<br> Première année (GINF1)',
+            'GINF2' => 'Cycle Ingénieur - Génie Informatique<br> Deuxième année (GINF2)',
+            'GINF3' => 'Cycle Ingénieur - Génie Informatique <br>Troisième année (GINF3)',
+            'GCIV1' => 'Cycle Ingénieur - Génie Civil <br> Première année (GCIV1)',
+            'GCIV2' => 'Cycle Ingénieur - Génie Civil <br> Deuxième année (GCIV2)',
+            'GCIV3' => 'Cycle Ingénieur - Génie Civil <br> Troisième année (GCIV3)',
+            'GSEIR1'=> 'Cycle Ingénieur - Génie des Systèmes Electronique, Informatique et Réseaux <br> Première année (GSEIR1)',
+            'GSEIR2'=> 'Cycle Ingénieur - Génie des Systèmes Electronique, Informatique et Réseaux <br> Deuxième année (GSEIR2)',
+            'GSEIR3'=> 'Cycle Ingénieur - Génie des Systèmes Electronique, Informatique et Réseaux <br> Troisième année (GSEIR3)',
+            'GIND1' => 'Cycle Ingénieur - Génie Industriel <br> Première année (GIND1)',
+            'GIND2' => 'Cycle Ingénieur - Génie Industriel <br> Deuxième année (GIND2)',
+            'GIND3' => 'Cycle Ingénieur - Génie Industriel <br> Troisième année (GIND3)',
+            'GELC1' => 'Cycle Ingénieur - Génie Electrique <br> Première année (GELC1)',
+            'GELC2' => 'Cycle Ingénieur - Génie Electrique <br> Deuxième année (GELC2)',
+            'GELC3' => 'Cycle Ingénieur - Génie Electrique <br> Troisième année (GELC3)',
+            'ITIRC1'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Première année (ITIRC1)',
+            'ITIRC2'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Deuxième année (ITIRC2)',
+            'ITIRC3'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Troisième année (ITIRC3)',
+            'IDSCC1' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Première année (IDSCC1)',
+            'IDSCC2' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Deuxième année (IDSCC2)',
+            'IDSCC3' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Troisième année (IDSCC3)',
+            'MGSI1' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Première année (MGSI1)',
+            'MGSI2' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Deuxième année (MGSI2)',
+            'MGSI3' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Troisième année (MGSI3)',
+            'SICS1' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Première année <br> (SICS1)',
+            'SICS2' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Deuxième année <br> (SICS2)',
+            'SICS3' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Troisième année <br> (SICS3)',
+
+        ];
+    
         
+        //Test:  Récupérer le nom complet ou utiliser le code si non trouvé
+        $nomCompletFiliere = isset($nomsFilieres[$filiere]) ? $nomsFilieres[$filiere] : $filiere;
+        
+        $html = '
+        <p style="text-align:center;font-size:18px;">
+            <strong>PLANNING <span style="color: #FF0000;">DÉFINITIF</span> DES EXAMENS<br>
+            DS n° 2 - SEMESTRE 1, JANVIER 2025</strong>
+        </p>
+        <p style="text-align:center;font-size:12px;">
+            <strong>Filière : ' . $nomCompletFiliere . '</strong>
+        </p>';
+
         $html .= '<table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #7ba0eb;">
             <thead>
-                <tr style="background-color:rgb(50, 112, 179); color:white;">
-                    <th style="width:15%;text-align:center;border: 0.5px solid #7ba0eb;">Date</th>
-                    <th style="width:15%;text-align:center;border: 0.5px solid #7ba0eb;">Heure</th>
-                    <th style="width:20%;text-align:center;border: 0.5px solid #7ba0eb;">Matière</th>
-                    <th style="width:30%;text-align:center;border: 0.5px solid #7ba0eb;">Coordinateur</th>
-                    <th style="width:20%;text-align:center;border: 0.5px solid #7ba0eb;">Salle</th>
+                <tr style="background-color: #4472c4; color:white;">
+                    <th style="width:15%;text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Date</th>
+                    <th style="width:15%;text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Heure</th>
+                    <th style="width:20%;text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Matière</th>
+                    <th style="width:30%;text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Coordinateur</th>
+                    <th style="width:20%;text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Salle(s)</th>
                 </tr>
             </thead>
             <tbody>';
             $lastDate = ''; // Variable to keep track of the last date
+        
             foreach ($entries as $entry) {
                 $html.='<tr>';
                 // Check if the current date is the same as the last one
                 if ($entry['date'] === $lastDate) {
                     // If the date is the same, create an empty cell for the date
-                    $html .= '<td style="width:15%;text-align:center;border: 0.5px solid #7ba0eb;"></td>'; // Empty cell for date
+                    $html .= '<td style="width:15%;text-align:center;border: 0.5px solid #89a5d9;"></td>'; // Empty cell for date
                 } else {
                     // If the date is different, write the date and update lastDate
-                    $html .= '<td style="width:15%;text-align:center;border: 0.5px solid #7ba0eb;" rowspan="1">' . htmlspecialchars($entry['date']) . '</td>';
+                    $html .= '<td style="width:15%;text-align:center;border: 0.5px solid #89a5d9;" rowspan="1">' . htmlspecialchars($entry['date']) . '</td>';
                     $lastDate = $entry['date']; // Update lastDate to current date
+                                
                 }
-                
-                $html .= '<td style="width:15%;text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['heure']) . '</td>
-                          <td style="width:20%;text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['matiere']) . '</td>
-                          <td style="width:30%;text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['coordinateur']) . '</td>
-                          <td style="width:20%;text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['salle']) . '</td>
-                        </tr>';
+
+                $html .=  ' <td style="width:15%;text-align:center;border: 0.5px solid #89a5d9; ">' . htmlspecialchars($entry['heure']) . '</td>
+                              <td style="width:20%;text-align:center;border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['matiere']) . '</td>
+                              <td style="width:30%;text-align:center;border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['coordinateur']) . '</td>
+                              <td style="width:20%;text-align:center;border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['salle']) . '</td>
+                          </tr>';
+           
             }
         $html .= '</tbody></table>';
         $pdf->writeHTML($html, true, false, true, false, '');
@@ -340,7 +477,7 @@ ob_end_flush();
         <p>Importez un fichier Excel pour générer automatiquement les documents pour le planning global</p>
     </div>
 
-    <form action="planning.php" method="post" enctype="multipart/form-data" id="upload-form">
+    <form action="planning.php" method="post" enctype="multipart/form-data" id="upload-form" target="_blank">
         <div class="upload-section" id="drop-area">
             <i class="fas fa-file-excel file-icon"></i>
             <p>Glissez-déposez votre fichier Excel ici ou cliquez pour sélectionner un fichier contenant les données du planning global</p>
