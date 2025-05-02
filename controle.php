@@ -7,6 +7,8 @@
     use PhpOffice\PhpSpreadsheet\IOFactory;
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
     
+    
+    
     if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         $today = date('d/m/Y'); 
         $file_tmp = $_FILES['file']['tmp_name'];
@@ -128,9 +130,10 @@
                         </tr>';
             }
             $html .= '</tbody></table>'; 
-            
             $pdf->AddPage();
+            
             $pdf->writeHTML($html, true, false, true, false, '');
+
         }
         ob_end_clean();
         $pdf->Output('contrôle_de_présence.pdf', 'I');
