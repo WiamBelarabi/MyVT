@@ -1,7 +1,5 @@
 <?php
 ob_start();
-session_start();
-
 include("navbar.php");
 
 require 'vendor/autoload.php';
@@ -235,10 +233,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         $nomCompletFiliere = isset($nomsFilieres[$filiere]) ? $nomsFilieres[$filiere] : $filiere;
         
         $html = '
-        <p style="text-align:center;font-size:18px;">
-            <strong>PLANNING <span style="color: #FF0000;">DÉFINITIF</span> DES EXAMENS<br>
-            DS n° 2 - SEMESTRE 1, JANVIER 2025</strong>
-        </p>
+            <p style="text-align:center;font-size:18px;">
+                <strong>PLANNING <span style="color: #FF0000;">DÉFINITIF</span> DES EXAMENS<br>';
+
+        if (isset($_SESSION['session'])) {
+            $html .= htmlspecialchars($_SESSION['session']);
+        }
+
+        $html .= '</strong></p>
         <p style="text-align:center;font-size:12px;">
             <strong>Filière : ' . $nomCompletFiliere . '</strong>
         </p>';

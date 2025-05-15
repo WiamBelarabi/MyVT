@@ -1,6 +1,5 @@
 <?php
     ob_start();
-    session_start();
 
     include("navbar.php");
     require 'vendor/autoload.php';
@@ -218,7 +217,15 @@
             $html = '<p style="text-align:right;">Oujda le '. date('d/m/Y').'<br></p>
             <p style="text-align:center;font-size: 12px;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ECOLE NATIONAL DES SCIENCES APPLIQUEES D\'OUJDA</p>
             <p style="text-align:center;font-size: 12px;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($surv) .'</strong></p><br>
-            <p style="font-size: 12px;"><strong><br>Objet: </strong>Surveillance et Coordination des Devoirs Surveillés (DS 2) Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la surveillance et à la coordination des Devoirs Surveillés (DS 1), Semestre 2, conformément au tableau ci-dessous :</p>
+            <p style="font-size: 12px;"><strong><br>Objet: </strong>Surveillance et Coordination des Devoirs Surveillés ';
+            if (isset($_SESSION['session'])) {
+                $html .= htmlspecialchars($_SESSION['session']);
+            }
+            $html .= '<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la surveillance et à la coordination des Devoirs Surveillés ';
+            if (isset($_SESSION['session'])) {
+                $html .= htmlspecialchars($_SESSION['session']);
+            }             
+            $html .= ' conformément au tableau ci-dessous :</p>
             <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #89a5d9;">
             <thead>
                 <tr style="background-color:#4472c4; color:white;">
