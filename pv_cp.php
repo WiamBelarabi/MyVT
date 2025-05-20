@@ -2,7 +2,7 @@
 
 
     ob_start();
-    session_start();
+
 
     include("navbar.php");
     require 'vendor/autoload.php';

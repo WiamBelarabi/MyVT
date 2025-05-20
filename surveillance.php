@@ -229,19 +229,9 @@
             $html = '<p style="text-align:right;">Oujda le '. date('d/m/Y').'<br></p>
             <p style="text-align:center;font-size: 12px;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ÉCOLE NATIONAL DES SCIENCES APPLIQUÉES D\'OUJDA</p>
             <p style="text-align:center;font-size: 12px;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($surv) .'</strong></p><br>
-<<<<<<< HEAD
+
             <p style="font-size: 12px;"><strong><br>Objet: </strong>Surveillance et Coordination des Devoirs Surveillés (DS 2), Semestre 1<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la surveillance et à la coordination des Devoirs Surveillés (DS 1), Semestre 2, conformément au tableau ci-dessous :</p>
-=======
-            <p style="font-size: 12px;"><strong><br>Objet: </strong>Surveillance et Coordination des Devoirs Surveillés ';
-            if (isset($_SESSION['session'])) {
-                $html .= htmlspecialchars($_SESSION['session']);
-            }
-            $html .= '<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer à la surveillance et à la coordination des Devoirs Surveillés ';
-            if (isset($_SESSION['session'])) {
-                $html .= htmlspecialchars($_SESSION['session']);
-            }             
-            $html .= ' conformément au tableau ci-dessous :</p>
->>>>>>> 961693f4665798f8af91ae712bba80540bd793b6
+
             <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #89a5d9;">
             <thead>
                 <tr style="background-color:#4472c4; color:white;">
@@ -254,7 +244,7 @@
                 </tr>
             </thead>
             <tbody>';
-<<<<<<< HEAD
+
            // Regrouper les entrées par date
     $groupedEntries = [];
     foreach ($entries as $entry) {
@@ -282,21 +272,8 @@
             else {
                 // Pour le cas d'une seule ligne, on utilise simplement vertical-align: middle
                 $html .= '<td style="width:19%; white-space: nowrap; text-align:center; border: 0.5px solid #7ba0eb; vertical-align: middle; padding: 8px;" rowspan="' . count($dateEntries) . '">' . htmlspecialchars($date) . '</td>';
-=======
-            foreach ($entries as $entry) {
-               // $rowColor = ($rowIndex % 2 == 0) ? '#d9e1f2;' : 'white';
-                $rowColor = ($rowIndex % 2 == 0) ? '#d9e1f2;' : '#d9e1f2'; 
-                $rowIndex++; 
-                $html .= '<tr style="background-color: ' . $rowColor . ';">
-                            <td style="width:19%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['date']) . '</td>
-                            <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['heure']) . '</td>
-                            <td style="width:11%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['filiere']) . '</td>
-                            <td style="width:23%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['matiere']) . '</td>
-                            <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['salle']) . '</td>
-                            <td style="width:15%; text-align:center;border: 0.5px solid #7ba0eb;">' . htmlspecialchars($entry['mission']) . '</td>
-                        </tr>';
->>>>>>> 961693f4665798f8af91ae712bba80540bd793b6
-            }
+
+           }
             $first = false;
         }
         

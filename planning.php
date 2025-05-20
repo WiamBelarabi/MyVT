@@ -230,7 +230,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
     
         
         //Test:  Récupérer le nom complet ou utiliser le code si non trouvé
-<<<<<<< HEAD
+
     $nomCompletFiliere = isset($nomsFilieres[$filiere]) ? $nomsFilieres[$filiere] : $filiere;
     
     // Test: si c'est un cycle d'ingénieur ou préparatoire
@@ -261,22 +261,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
     <p style="text-align:center;font-size:12px;">
         <strong>Filière : ' . $nomCompletFiliere . '</strong>
     </p>';
-=======
-        $nomCompletFiliere = isset($nomsFilieres[$filiere]) ? $nomsFilieres[$filiere] : $filiere;
-        
-        $html = '
-            <p style="text-align:center;font-size:18px;">
-                <strong>PLANNING <span style="color: #FF0000;">DÉFINITIF</span> DES EXAMENS<br>';
-
-        if (isset($_SESSION['session'])) {
-            $html .= htmlspecialchars($_SESSION['session']);
-        }
-
-        $html .= '</strong></p>
-        <p style="text-align:center;font-size:12px;">
-            <strong>Filière : ' . $nomCompletFiliere . '</strong>
-        </p>';
->>>>>>> 961693f4665798f8af91ae712bba80540bd793b6
 
     $html .= '<table cellpadding="5" cellspacing="0" style="border-collapse:collapse; border: 0.5px solid #7ba0eb; width:100%;">
         <thead>

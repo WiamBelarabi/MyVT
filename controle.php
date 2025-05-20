@@ -1,11 +1,6 @@
 <?php
     ob_start();
-<<<<<<< HEAD
 
-
-
-=======
->>>>>>> 961693f4665798f8af91ae712bba80540bd793b6
     include("navbar.php");
     require 'vendor/autoload.php';
 

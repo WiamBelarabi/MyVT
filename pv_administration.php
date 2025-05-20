@@ -2,7 +2,7 @@
 
 
     ob_start();
-    session_start();
+
 
     include("navbar.php");
     require 'vendor/autoload.php';
@@ -336,8 +336,8 @@
 
                     $html .= '<tr style="font-size:8px;">
                         <td style="text-align:center; border: 0.5px solid #7ba0eb;">1</td>
-                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $surveillant1 . '</td>
-                        <td style="text-align:left; border: 0.5px solid #7ba0eb;"></td>
+                        <td style="text-align:left; border: 0.5px solid #7ba0eb;">' . $surveillant1 . '</td>
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
                         <td rowspan="2" style="text-align:center; border: 0.5px solid #7ba0eb; height:20px;"></td>
                         <td rowspan="2" style="text-align:center; border: 0.5px solid #7ba0eb; height:20px;"></td>
                     </tr>';
@@ -348,7 +348,7 @@
                         : 'M./Mme. ';
 
                     $html .= '<tr style="font-size:8px;">
-                        <td style="text-align:left; border: 0.5px solid #7ba0eb;">2</td>
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">2</td>
                         <td style="text-align:left; border: 0.5px solid #7ba0eb;">' . $surveillant2 . '</td>
                         <td style="text-align:left; border: 0.5px solid #7ba0eb;"></td>
                     </tr>';
