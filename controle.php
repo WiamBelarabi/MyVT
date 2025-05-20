@@ -1,8 +1,11 @@
 <?php
     ob_start();
+<<<<<<< HEAD
 
 
 
+=======
+>>>>>>> 961693f4665798f8af91ae712bba80540bd793b6
     include("navbar.php");
     require 'vendor/autoload.php';
 
@@ -195,7 +198,15 @@
             $html = '<p style="text-align:right;">Oujda le '. date('d/m/Y').'<br></p>
             <p style="text-align:center;font-size: 12px;"><br><strong>DE</strong><br>MONSIEUR LE DIRECTEUR<br>DE L\'ÉCOLE NATIONALE DES SCIENCES APPLIQUÉES D\'OUJDA</p>
             <p style="text-align:center;font-size: 12px;"><strong>À<br>MONSIEUR/MADAME ' . htmlspecialchars($contr) .'</strong></p><br>
-            <p style="font-size: 12px;"><strong><br>Objet: </strong>Contrôle de Présence des Devoirs Surveillés (DS 2), Semestre <br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer au contrôle de présence lors des Devoirs Surveillés (DS 1), Semestre 2, conformément au tableau ci-dessous :</p>
+            <p style="font-size: 12px;"><strong><br>Objet: </strong>Contrôle de Présence des Devoirs Surveillés ';
+            if (isset($_SESSION['session'])) {
+                $html .= htmlspecialchars($_SESSION['session']);
+            }
+            $html .='<br><br>Cher(e) collègue,<br>Je vous prie de bien vouloir participer au contrôle de présence lors des Devoirs Surveillés ';
+            if (isset($_SESSION['session'])) {
+                $html .= htmlspecialchars($_SESSION['session']);
+            }
+            $html .=' conformément au tableau ci-dessous :</p>
             <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #89a5d9">
             <thead>
                 <tr style="background-color: #4472c4; color:white;">

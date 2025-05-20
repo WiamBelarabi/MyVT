@@ -1,3 +1,10 @@
+<?php
+session_start();
+
+if (isset($_POST['session'])) {
+    $_SESSION['session'] = $_POST['session'];
+}
+?>
 <!DOCTYPE html> 
 <html lang="fr">
 <head>
@@ -9,6 +16,29 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        #session {
+            padding : 12px;
+            border: 0.5;
+            border-color :  #6e8efb; 
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        .session{
+            display: flex;
+            justify-content: center; /* Horizontal center */
+            height: 100vh; 
+        }
+        #submit{
+            background: linear-gradient(135deg, #6e8efb 0%, #a777e3 100%);
+            padding : 12px;
+            border: none; 
+            border-radius: 4px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+    </style>
 </head>
 <body>
 <div class="app-container">
@@ -87,7 +117,18 @@
     <div class="content-body">
         <div class="welcome-card" id="dashboard">
             <h3>Tableau de bord</h3>
-            <p>Sélectionnez une option dans le menu pour commencer</p>
+            <p>Veuillez préciser la session des examens pour commancer :</p>
+            <div class="session">
+            <form id="sessionForm">
+                <select id="session" name="session" required>
+                    <option value="DS1 Semestre1">DS1 Semestre 1</option>
+                    <option value="DS1 Semestre2">DS1 Semestre 2</option>
+                    <option value="DS2 Semestre1">DS2 Semestre 1</option>
+                    <option value="DS2 Semestre2">DS2 Semestre 2</option>
+                </select>
+                <input type="submit" id="submit" value="Soumettre">
+            </form>
+            </div>
         </div>
     </div>
 </div>
@@ -100,6 +141,23 @@
     document.getElementById('toggleSidebar').addEventListener('click', function() {
         document.querySelector('.sidebar').classList.toggle('collapsed');
         document.querySelector('.main-content').classList.toggle('expanded');
+    });
+
+     document.getElementById('sessionForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // Prevent the default form submission
+
+        var formData = new FormData(this);
+
+        fetch('navbar.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.text())
+        .then(data => {
+            console.log('Session saved:', data);
+            // Optionally, handle the response data here
+        })
+        .catch(error => console.error('Error:', error));
     });
 </script>
 </body>

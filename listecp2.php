@@ -1,6 +1,5 @@
 <?php
 ob_start();
-session_start();
 
 require 'navbar.php'; 
 require 'vendor/autoload.php';
