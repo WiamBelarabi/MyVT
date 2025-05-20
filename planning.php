@@ -91,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
                 'module_height' => 1
             );
             // Position: 9mm from left, 31mm from top
-            $this->write2DBarcode($qrText, 'QRCODE,L', 9, 31, 35, 40, $style);
+            $this->write2DBarcode($qrText, 'QRCODE,L', 9, 30, 30, 40, $style);
 
             // Contenu du header aligné 
             $html = '
@@ -218,66 +218,111 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
             'ITIRC1'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Première année (ITIRC1)',
             'ITIRC2'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Deuxième année (ITIRC2)',
             'ITIRC3'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Troisième année (ITIRC3)',
-            'IDSCC1' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Première année (IDSCC1)',
-            'IDSCC2' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Deuxième année (IDSCC2)',
-            'IDSCC3' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Troisième année (IDSCC3)',
+            'IDSCC1'=> 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Première année (IDSCC1)',
+            'IDSCC2'=> 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Deuxième année (IDSCC2)',
+            'IDSCC3'=> 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Troisième année (IDSCC3)',
             'MGSI1' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Première année (MGSI1)',
             'MGSI2' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Deuxième année (MGSI2)',
             'MGSI3' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Troisième année (MGSI3)',
-            'SICS1' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Première année <br> (SICS1)',
-            'SICS2' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Deuxième année <br> (SICS2)',
-            'SICS3' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Troisième année <br> (SICS3)',
+            'SICS1' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité <br> Première année  (SICS1)',
+            'SICS2' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité <br> Deuxième année  (SICS2)',
+            'SICS3' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité <br> Troisième année  (SICS3)',
 
         ];
     
         
         //Test:  Récupérer le nom complet ou utiliser le code si non trouvé
-        $nomCompletFiliere = isset($nomsFilieres[$filiere]) ? $nomsFilieres[$filiere] : $filiere;
-        
-        $html = '
-        <p style="text-align:center;font-size:18px;">
-            <strong>PLANNING <span style="color: #FF0000;">DÉFINITIF</span> DES EXAMENS<br>
-            DS n° 2 - SEMESTRE 1, JANVIER 2025</strong>
-        </p>
-        <p style="text-align:center;font-size:12px;">
-            <strong>Filière : ' . $nomCompletFiliere . '</strong>
-        </p>';
+    $nomCompletFiliere = isset($nomsFilieres[$filiere]) ? $nomsFilieres[$filiere] : $filiere;
+    
+    // Test: si c'est un cycle d'ingénieur ou préparatoire
+    $isCycleIngenieur = (strpos($filiere, 'STPI') !== 0); // Si ne commence pas par STPI, c'est un cycle ingénieur
+    
+    // Ajuster les largeurs des colonnes en fonction du cycle
+    if ($isCycleIngenieur) {
+        // Cycle ingénieur 
+        $widthDate = '15%';
+        $widthHeure = '13%';
+        $widthMatiere = '35%'; 
+        $widthCoordinateur = '27%';
+        $widthSalle = '10%'; 
+    } else {
+        // Cycle préparatoire - garder les tailles originales
+        $widthDate = '15%';
+        $widthHeure = '13%';
+        $widthMatiere = '28%';
+        $widthCoordinateur = '25%';
+        $widthSalle = '19%';
+    }
+    
+    $html = '
+    <p style="text-align:center;font-size:18px;">
+        <strong>PLANNING <span style="color: #FF0000;">DÉFINITIF</span> DES EXAMENS<br>
+        DS n° 2 - SEMESTRE 1, JANVIER 2025</strong>
+    </p>
+    <p style="text-align:center;font-size:12px;">
+        <strong>Filière : ' . $nomCompletFiliere . '</strong>
+    </p>';
 
-        $html .= '<table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #7ba0eb;">
-            <thead>
-                <tr style="background-color: #4472c4; color:white;">
-                    <th style="width:15%;text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Date</th>
-                    <th style="width:15%;text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Heure</th>
-                    <th style="width:20%;text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Matière</th>
-                    <th style="width:30%;text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Coordinateur</th>
-                    <th style="width:20%;text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Salle(s)</th>
-                </tr>
-            </thead>
-            <tbody>';
-            $lastDate = ''; // Variable to keep track of the last date
+    $html .= '<table cellpadding="5" cellspacing="0" style="border-collapse:collapse; border: 0.5px solid #7ba0eb; width:100%;">
+        <thead>
+            <tr style="background-color: #4472c4; color:white;">
+                <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width: ' . $widthDate . ';">Date</th>
+                <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width: ' . $widthHeure . ';">Heure</th>
+                <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width: ' . $widthMatiere . ';">Matière</th>
+                <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width: ' . $widthCoordinateur . ';">Coordinateur</th>
+                <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width: ' . $widthSalle . ';">Salle(s)</th>
+            </tr>
+        </thead>
+        <tbody>';
+
+    // Group entries by date to calculate rowspans
+    $groupedEntries = [];
+    foreach ($entries as $entry) {
+        $groupedEntries[$entry['date']][] = $entry;
+    }
+
+    $rowIndex = 0;
+    foreach ($groupedEntries as $date => $dateEntries) {
+        $first = true;
         
-            foreach ($entries as $entry) {
-                $html.='<tr>';
-                // Check if the current date is the same as the last one
-                if ($entry['date'] === $lastDate) {
-                    // If the date is the same, create an empty cell for the date
-                    $html .= '<td style="width:15%;text-align:center;border: 0.5px solid #89a5d9;"></td>'; // Empty cell for date
-                } else {
-                    // If the date is different, write the date and update lastDate
-                    $html .= '<td style="width:15%;text-align:center;border: 0.5px solid #89a5d9;" rowspan="1">' . htmlspecialchars($entry['date']) . '</td>';
-                    $lastDate = $entry['date']; // Update lastDate to current date
-                                
+        foreach ($dateEntries as $entry) {
+            $rowColor = ($rowIndex % 2 == 0) ? '#e6edf8' : '#e6edf8';
+            
+            $html .= '<tr style="background-color: ' . $rowColor . ';">';
+            $rowIndex++;
+            
+            if ($first) {
+                // Pour centrer la date par rapport aux lignes de la colonne heure
+                //   if (count($dateEntries) == 2) {
+                //     // Si exactement 2 lignes, on utilise une technique spéciale pour centrer
+                //     $html .= '<td style="width:15%; text-align:center; border: 0.5px solid #89a5d9; vertical-align: middle; padding: 0; height: ' . $totalHeight . 'px;" rowspan="' . count($dateEntries) . '">
+                //                 <div style="display: flex; align-items: center; justify-content: center; height: 100%;">' . htmlspecialchars($date) . '</div>
+                //             </td>';
+                // } 
+
+                if (count($dateEntries) >= 2) {
+                    // Si 2 lignes ou plus, on utilise la technique de centrage avec flexbox
+                    $html .= '<td style="width:' . $widthDate . '; white-space: nowrap; text-align:center; border: 0.5px solid #89a5d9; vertical-align: middle; padding: 0;" rowspan="' . count($dateEntries) . '">
+                                <div style="display: flex; align-items: center; justify-content: center; height: 100%;">' . htmlspecialchars($date) . '</div>
+                              </td>';
+                } 
+                else {
+                    // Pour le cas d'une seule ligne, on utilise simplement vertical-align: middle
+                    $html .= '<td style="width:' . $widthDate . '; text-align:center; border: 0.5px solid #89a5d9; vertical-align: middle; padding: 8px;" rowspan="' . count($dateEntries) . '">' . htmlspecialchars($date) . '</td>';
                 }
-
-                $html .=  ' <td style="width:15%;text-align:center;border: 0.5px solid #89a5d9; ">' . htmlspecialchars($entry['heure']) . '</td>
-                              <td style="width:20%;text-align:center;border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['matiere']) . '</td>
-                              <td style="width:30%;text-align:center;border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['coordinateur']) . '</td>
-                              <td style="width:20%;text-align:center;border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['salle']) . '</td>
-                          </tr>';
-           
+                $first = false;
             }
-        $html .= '</tbody></table>';
-        $pdf->writeHTML($html, true, false, true, false, '');
+            
+            $html .= '<td style="width:' . $widthHeure . '; text-align:center; border: 0.5px solid #89a5d9; vertical-align:middle; ">' . htmlspecialchars($entry['heure']) . '</td>
+                     <td style="width:' . $widthMatiere . '; text-align:center; border: 0.5px solid #89a5d9; vertical-align:middle;">' . htmlspecialchars($entry['matiere']) . '</td>
+                     <td style="width:' . $widthCoordinateur . '; text-align:center; border: 0.5px solid #89a5d9; vertical-align:middle; ">' . htmlspecialchars($entry['coordinateur']) . '</td>
+                     <td style="width:' . $widthSalle . '; text-align:center; border: 0.5px solid #89a5d9; vertical-align:middle; ">' . htmlspecialchars($entry['salle']) . '</td>
+                  </tr>';
+        }
+    }
+
+    $html .= '</tbody></table>';
+$pdf->writeHTML($html, true, false, true, false, '');
     }
 
     ob_end_clean();
