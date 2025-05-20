@@ -1,5 +1,6 @@
 <?php
     ob_start();
+
     include("navbar.php");
     require 'vendor/autoload.php';
 
@@ -68,7 +69,19 @@
                 // Position initiale pour le contenu du header
                 $this->SetY(10);
                 $this->SetFont('dejavusans', '', 10); 
-  
+              // Ajout du QR code (Site ENSAO)
+                $qrText = "http://ensao.ump.ma/fr/actualite/planning-des-devoirs-surveilles-mi-semestre-2-2024-2025";
+                $style = array(
+                    'border' => 0,
+                    'vpadding' => 'auto',
+                    'hpadding' => 'auto',
+                    'fgcolor' => array(0, 0, 0),
+                    'bgcolor' => false,
+                    'module_width' => 1,
+                    'module_height' => 1
+                );
+                // Position: 9mm from left, 31mm from top
+               $this->write2DBarcode($qrText, 'QRCODE,L', 9, 35, 30, 35, $style);
     
                 // Contenu du header aligné 
                 $html = '
@@ -191,46 +204,57 @@
             $html .=' conformément au tableau ci-dessous :</p>
             <table  cellpadding="5" cellspacing="0" style="width:100%; border-collapse:collapse;border: 0.5px solid #89a5d9">
             <thead>
-                <tr  style="background-color: #4472c4; color:white;">
-                    <th style="width:30%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Date</th>
-                    <th style="width:20%; text-align:center;border: 0.5px solid #89a5d9;font-weight: bold;">Heure</th>
-                    <th style="width:30%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Filière</th>
-                    <th style="width:20%; text-align:center;border: 0.5px solid #89a5d9; font-weight: bold;">Salle(s)</th>
+                <tr style="background-color: #4472c4; color:white;">
+                    <th style="width:30%; text-align:center; border: 0.5px solid #89a5d9; font-weight: bold;">Date</th>
+                    <th style="width:20%; text-align:center; border: 0.5px solid #89a5d9; font-weight: bold;">Heure</th>
+                    <th style="width:30%; text-align:center; border: 0.5px solid #89a5d9; font-weight: bold;">Filière</th>
+                    <th style="width:20%; text-align:center; border: 0.5px solid #89a5d9; font-weight: bold;">Salle(s)</th>
                 </tr>
             </thead>
             <tbody>';
             
-            foreach ($entries as $entry) {
-              
-               // $rowColor = ($rowIndex % 2 == 0) ? '#d9e1f2;' : 'white';
-                $rowColor = ($rowIndex % 2 == 0) ? '#d9e1f2;' : '#d9e1f2';
-                $rowIndex++; 
-                $html .= '<tr style="background-color: ' . $rowColor . ';">
-                    <td style="width:30%; text-align:center; border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['date']) . '</td>
-                    <td style="width:20%; text-align:center; border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['heure']) . '</td>
-                    <td style="width:30%; text-align:center; border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['filiere']) . '</td>
-                    <td style="width:20%; text-align:center; border: 0.5px solid #89a5d9;">' . htmlspecialchars($entry['salle']) . '</td>
-                </tr>';
+// Regrouper les entrées par date
+$groupedEntries = [];
+foreach ($entries as $entry) {
+    $groupedEntries[$entry['date']][] = $entry;
+}
+
+$rowIndex = 0;
+foreach ($groupedEntries as $date => $dateEntries) {
+    $first = true;
+
+    foreach ($dateEntries as $entry) {
+        $rowColor = ($rowIndex % 2 == 0) ? '#e6edf8' : '#e6edf8';
+        
+        $html .= '<tr style="background-color: ' . $rowColor . ';">';
+        $rowIndex++;
+        
+        if ($first) {
+            // Pour centrer parfaitement la date par rapport aux lignes de la colonne heure
+            if (count($dateEntries) >= 2) {
+                // Si 2 lignes ou plus, on utilise la technique de centrage avec flexbox
+                $html .= '<td style="width:30%; white-space: nowrap; text-align:center; border: 0.5px solid #89a5d9; vertical-align: middle; padding: 0; height: ' . $totalHeight . 'px;" rowspan="' . count($dateEntries) . '">
+                            <div style="display: flex; align-items: center; justify-content: center; height: 100%;">' . htmlspecialchars($date) . '</div>
+                          </td>';
+            } 
+            else {
+                // Pour le cas d'une seule ligne, on utilise simplement vertical-align: middle
+                $html .= '<td style="width:30%; white-space: nowrap; text-align:center; border: 0.5px solid #89a5d9; vertical-align: middle; padding: 8px;" rowspan="' . count($dateEntries) . '">' . htmlspecialchars($date) . '</td>';
             }
-            $html .= '</tbody></table>'; 
-            
+            $first = false;
+        }
+        
+        $html .= '<td style="width:20%; text-align:center; border: 0.5px solid #89a5d9; vertical-align: middle; padding: 8px; height: ' . $rowHeight . 'px;">' . htmlspecialchars($entry['heure']) . '</td>
+                 <td style="width:30%; text-align:center; border: 0.5px solid #89a5d9; vertical-align: middle; padding: 8px;">' . htmlspecialchars($entry['filiere']) . '</td>
+         <td style="width:20%; text-align:center; border: 0.5px solid #89a5d9; vertical-align: middle; padding: 8px; white-space: nowrap;">' . htmlspecialchars($entry['salle']) . '</td>
+              </tr>';
+        }
+    }
+
+    $html .= '</tbody></table>';
+                
             $pdf->AddPage();
             $pdf->writeHTML($html, true, false, true, false, '');
-               // Ajout du QR code (Site ENSAO)
-            $qrText = "http://ensao.ump.ma/fr/actualite/planning-des-devoirs-surveilles-mi-semestre-2-2024-2025";
-            $style = array(
-                'border' => 0,
-                'vpadding' => 'auto',
-                'hpadding' => 'auto',
-                'fgcolor' => array(0, 0, 0),
-                'bgcolor' => false,
-                'module_width' => 1,
-                'module_height' => 1
-            );
-            
-            // Positionnement du QR code (left with 10mm sous le tableau)
-            $currentY = $pdf->GetY();
-            $pdf->write2DBarcode($qrText, 'QRCODE,L', ($pdf->getPageWidth() - 200) / 2, $currentY + 10, 40, 35, $style, 'N');
         }
         ob_end_clean();
         $pdf->Output('contrôle_de_présence.pdf', 'I');

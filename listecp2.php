@@ -149,7 +149,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
         $droite = array_slice($etudiants, $moitie);
         $html ='<h3 style="text-align:center; font-size:14px; ">CP2</h3>
         <p style="text-align:center;font-size:12px;">Liste des étudiants - Salle ' . htmlspecialchars($salle) . '</p>
-        <h4 style="text-align:center;font-size:12px;">Filière : Cycle Préparatoire - Sciences et Techniques pour l\'ingénieur <br> Première année</h4>';
+        <h4 style="text-align:center;font-size:12px;">Filière : Cycle Préparatoire - Sciences et Techniques pour l\'ingénieur <br> Deuxième année (STPI2)</h4>';
 
         // Générer le tableau HTML avec deux colonnes
         $html .= '<table border="0" cellpadding="5" cellspacing="5" style="width:100%;">
@@ -177,7 +177,7 @@ ob_end_flush();
 function genererTableauHTML($etudiants) {
     $html = '<table cellpadding="2" cellspacing="0" style="width:100%; border-collapse:collapse;">
                 <thead >
-                    <tr style="background-color: #4472c4; font-size: 7.5px;text-align:center; color:white; ">
+                    <tr style="background-color: #4472c4; font-size: 8px;text-align:center; color:white; ">
                         <th style="width:9%;border: 0.5px solid #89a5d9;font-weight: bold;">N°</th>
                         <th style="width:19%;border: 0.5px solid #89a5d9;font-weight: bold;">CNE</th>
                         <th style="width:39%;border: 0.5px solid #89a5d9;font-weight: bold;">Nom</th>
@@ -187,7 +187,7 @@ function genererTableauHTML($etudiants) {
                 <tbody >';
 
     foreach ($etudiants as $etudiant) {
-        $html .= '<tr style="font-size:6px; ">
+        $html .= '<tr style="font-size:6.5px; ">
                     <td style="text-align:center;border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['numero']) . '</td>
                     <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['cne']) . '</td>
                     <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['nom']) . '</td>

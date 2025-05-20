@@ -171,15 +171,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file'])) {
             'ITIRC1'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Première année (ITIRC1)',
             'ITIRC2'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Deuxième année (ITIRC2)',
             'ITIRC3'=> 'Cycle Ingénieur - Ingénierie des Technologies de l\'information et Réseaux de Communication <br> Troisième année (ITIRC3)',
-            'IDSCC1' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Première année (IDSCC1)',
-            'IDSCC2' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Deuxième année (IDSCC2)',
-            'IDSCC3' => 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Troisième année (IDSCC3)',
+            'IDSCC1'=> 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Première année (IDSCC1)',
+            'IDSCC2'=> 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Deuxième année (IDSCC2)',
+            'IDSCC3'=> 'Cycle Ingénieur - Ingénierie Data Sciences et Cloud Computing <br> Troisième année (IDSCC3)',
             'MGSI1' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Première année (MGSI1)',
             'MGSI2' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Deuxième année (MGSI2)',
             'MGSI3' => 'Cycle Ingénieur - Management et Gouvernance des Systèmes d\'informations <br> Troisième année (MGSI3)',
-            'SICS1' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Première année <br> (SICS1)',
-            'SICS2' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Deuxième année <br> (SICS2)',
-            'SICS3' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité Troisième année <br> (SICS3)',
+            'SICS1' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité <br> Première année  (SICS1)',
+            'SICS2' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité <br> Deuxième année  (SICS2)',
+            'SICS3' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité <br> Troisième année  (SICS3)',
 
         ];
 
@@ -216,7 +216,7 @@ ob_end_flush();
 function genererTableauHTML($etudiants) {
     $html = '<table cellpadding="2" cellspacing="0" style="width:100%; border-collapse:collapse;">
                 <thead >
-                    <tr style="background-color: #4472c4; font-size: 7.5px;text-align:center; color:white; ">
+                    <tr style="background-color: #4472c4; font-size: 8px;text-align:center; color:white; ">
                         <th style="width:9%;border: 0.5px solid #89a5d9;font-weight: bold;">N°</th>
                         <th style="width:19%;border: 0.5px solid #89a5d9;font-weight: bold;">CNE</th>
                         <th style="width:39%;border: 0.5px solid #89a5d9;font-weight: bold;">Nom</th>
@@ -226,7 +226,7 @@ function genererTableauHTML($etudiants) {
                 <tbody >';
 
     foreach ($etudiants as $etudiant) {
-        $html .= '<tr style="font-size:6px; ">
+        $html .= '<tr style="font-size:6.5px; ">
                     <td style="text-align:center;border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['numero']) . '</td>
                     <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['cne']) . '</td>
                     <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['nom']) . '</td>

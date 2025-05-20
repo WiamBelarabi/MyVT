@@ -320,59 +320,74 @@
                             </tr>
                         </table>';
                         $html .= '<p style="font-size:1px; line-height:3px;">&nbsp;</p>';
+                 
+                      // Tableau des surveillants
+                    $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:15px;">
+                        <tr style="background-color: #4472c4; color:white; text-align:center; font-size:8px;">
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; width:5%;font-weight: bold;">N°</th>
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; width:40%;font-weight: bold;">Nom du Surveillant</th>
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; width:12%;font-weight: bold;">Signature</th>
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; width:20%;font-weight: bold;">Observations</th>
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; width:23%;font-weight: bold;">Nombre de copies rendues</th>
+                        </tr>';
 
+                    // Première ligne avec les cellules fusionnées
+                    $surveillant1 = isset($infoExam['surveillants'][0]) && !empty($infoExam['surveillants'][0]) 
+                        ? 'M./Mme. ' . htmlspecialchars($infoExam['surveillants'][0]) 
+                        : 'M./Mme. ';
 
-                        
-                        // Tableau des surveillants
-                        $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:15px;">
-                            <tr style="background-color: #4472c4; color:white; text-align:center; font-size:8px;">
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:5%;font-weight: bold;">N°</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:30%;font-weight: bold;">Nom du Surveillant</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:15%;font-weight: bold;">Signature</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:25%;font-weight: bold;">Observations</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:25%;font-weight: bold;">Nombre de copies rendues</th>
-                            </tr>';
+                    $html .= '<tr style="font-size:8px;">
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">1</td>
+                        <td style="text-align:left; border: 0.5px solid #7ba0eb;">' . $surveillant1 . '</td>
+                        <td style=" border: 0.5px solid #7ba0eb;"></td>
+                        <td rowspan="2" style="text-align:center; border: 0.5px solid #7ba0eb; height:20px;"></td>
+                        <td rowspan="2" style="text-align:center; border: 0.5px solid #7ba0eb; height:20px;"></td>
+                    </tr>';
 
-                        // Ajouter les lignes pour les surveillants (vides ou avec les données disponibles)
-                        for ($i = 1; $i <= 2; $i++) {
-                            $surveillant = isset($infoExam['surveillants'][$i-1]) ? htmlspecialchars($infoExam['surveillants'][$i-1]) : '';
-                            
-                            $html .= '<tr style="font-size:8px;">
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $i . '</td>
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $surveillant . '</td>
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>';
-                            
-                            // Ajouter les cellules fusionnées uniquement à la première ligne
-                            if ($i == 1) {
-                                $html .= '<td rowspan="2" style="text-align:center; border: 0.5px solid #7ba0eb; height:20px;"></td>
-                                        <td rowspan="2" style="text-align:center; border: 0.5px solid #7ba0eb; height:20px;"></td>';
-                            }
-                            // Ne pas ajouter ces cellules pour la deuxième ligne
-                            
-                            $html .= '</tr>';
-                        }
-                        $html .= '</table>';
-                        
-                        // Saut de ligne entre les deux tableaux
+                    // Deuxième ligne sans les cellules fusionnées
+                    $surveillant2 = isset($infoExam['surveillants'][1]) && !empty($infoExam['surveillants'][1]) 
+                        ? 'M./Mme. ' . htmlspecialchars($infoExam['surveillants'][1]) 
+                        : 'M./Mme. ';
+
+                    $html .= '<tr style="font-size:8px;">
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">2</td>
+                        <td style="text-align:left; border: 0.5px solid #7ba0eb;">' . $surveillant2 . '</td>
+                        <td style="text-align:left; border: 0.5px solid #7ba0eb;"></td>
+                    </tr>';
+
+                    $html .= '</table>';
+
+                     // Saut de ligne entre les deux tableaux
                         $html .= '<p style="font-size:1px; line-height:3px;">&nbsp;</p>';
 
 
                         // Calculer le nombre d'étudiants
                         $nbEtudiants = count($etudiantsFiliere);
                         
-                        // Tableau des statistiques
-                        $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:10px;">
-                            <tr style="background-color: #4472c4; color:white; text-align:center; font-size:8px;">
-                                <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold; width:33%;">Nombre de convoqués</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold; width:33%;">Nombre de présents</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width:34%;">Nombre d\'absents</th>
-                            </tr>
-                            <tr style="text-align:center; font-size:8px;">
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiants . '</td>
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
-                            </tr>
-                        </table>';
+                // Tableau des statistiques avec un seul surveillant et toutes les données
+                    $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:10px;">
+                        <tr style="background-color: #4472c4; color:white; text-align:center; font-size:8px;">
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width:35%;">Représentants de l\'administration</th>
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width:10%;">Signature</th>
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width:20%;">Nombre de convoqués</th>
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width:20%;">Nombre de présents</th>
+                            <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width:15%;">Nombre d\'absents</th>
+                        </tr>';
+
+                    // Récupération du nom de Représentants de l'administration
+                    $surveillant = (isset($infoExam['surveillants'][0]) && !empty($infoExam['surveillants'][0])) 
+                        ? 'M./Mme ' . htmlspecialchars($infoExam['surveillants'][0]) 
+                        : 'M./Mme ';
+
+                    $html .= '<tr style="text-align:center; font-size:8px;">
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $surveillant . '</td>
+                        <td style=" border: 0.5px solid #7ba0eb;"></td>
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiants . '</td>
+                            <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
+                            <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
+                    </tr>';
+
+                    $html .= '</table>';
                         
                         // Diviser les étudiants en deux colonnes
                         $moitie = ceil($nbEtudiants / 2);
@@ -393,6 +408,10 @@
                 }
             }
             
+            // Vérifier si des pages ont été générées
+            if ($pagesGenerated == 0) {
+                throw new Exception("Aucune page n'a pu être générée. Vérifiez que vos fichiers Excel contiennent des données valides.");
+            }
             
             // Générer le PDF et l'envoyer au navigateur
             $pdf->Output('pv_cycle.pdf', 'I');
@@ -401,7 +420,7 @@
             exit();
             
         } catch (Exception $e) {
-            // En cas d'erreur, afficher un message
+              // En cas d'erreur, afficher un message
             ob_clean();
             echo "<h2>Erreur lors de la génération du PDF</h2>";
             echo "</div>";
@@ -598,7 +617,7 @@
             <p>Importez deux fichiers Excel pour générer automatiquement les documents de PV</p>
         </div>
 
-        <form action="pv_cycle.php" method="post" enctype="multipart/form-data" id="upload-form" target="_blank">
+        <form action="pv_cp.php" method="post" enctype="multipart/form-data" id="upload-form" target="_blank">
             <div class="upload-section">
                 <i class="fas fa-file-excel file-icon"></i>
                 <p>Glissez-déposez vos fichiers Excel ici ou cliquez pour sélectionner</p>

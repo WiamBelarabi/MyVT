@@ -63,6 +63,10 @@ if (isset($_POST['session'])) {
                 <i class="fas fa-clipboard-check"></i>
                 <span>PV de présence CP</span>
             </a>
+             <a href="pv_administration.php" class="nav-item">
+                <i class="fas fa-clipboard-check"></i>
+                <span>PV de présence CP Administration</span>
+            </a>
             <a href="pv_cycle.php" class="nav-item">
                 <i class="fas fa-clipboard-list"></i>
                 <span>PV de présence Cycle</span>
