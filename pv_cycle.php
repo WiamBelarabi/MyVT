@@ -594,7 +594,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Génération de PV de présence</h1>
+            <h1>Génération de PV de présence du cycle</h1>
             <p>Importez deux fichiers Excel pour générer automatiquement les documents de PV</p>
         </div>
 
@@ -610,6 +610,10 @@
                     <input type="file" name="file1" id="file1" class="file-input" accept=".xlsx, .xls" required>
                     <div class="file-name" id="file1-name">Aucun fichier sélectionné</div>
                 </div>
+            </div>
+            <div class="upload-section">
+                <i class="fas fa-file-excel file-icon"></i>
+                <p>Glissez-déposez vos fichiers Excel ici ou cliquez pour sélectionner</p>
 
                 <div class="file-input-wrapper">
                     <label for="file2" class="file-label">
