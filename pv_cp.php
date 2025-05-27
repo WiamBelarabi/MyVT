@@ -11,35 +11,30 @@
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
     
     // Fonction pour générer le tableau des étudiants
-    function genererTableauHTML($etudiants, $startIndex = 1) {
-        $html = '<table cellpadding="2" cellspacing="0" style="width:100%; border-collapse:collapse; table-layout:auto; margin-bottom:10px;">
-                    <thead>
-                        <tr style="background-color: #4472c4; font-size: 8px; text-align:center; color:white;">
-                            <th style="width:9%;border: 0.5px solid #89a5d9;font-weight: bold;">N°</th>
-                            <th style="width:18%;border: 0.5px solid #89a5d9;font-weight: bold;">CNE</th>
-                            <th style="width:31%;border: 0.5px solid #89a5d9;font-weight: bold;">Nom</th>
-                            <th style="width:29%; border: 0.5px solid #89a5d9;font-weight: bold;">Prénom</th>
-                            <th style="width:13%; border: 0.5px solid #89a5d9;font-weight: bold;">P/ABS</th>
-                        </tr>
-                    </thead>
-                    <tbody>';
+    function genererTableauHTML($etudiants) {
+    $html = '<table cellpadding="2" cellspacing="0" style="width:100%; border-collapse:collapse;">
+                <thead >
+                    <tr style="background-color: #4472c4; font-size: 8px;text-align:center; color:white; ">
+                        <th style="width:9%;border: 0.5px solid #89a5d9;font-weight: bold;">N°</th>
+                        <th style="width:19%;border: 0.5px solid #89a5d9;font-weight: bold;">CNE</th>
+                        <th style="width:39%;border: 0.5px solid #89a5d9;font-weight: bold;">Nom</th>
+                        <th style="width:33%;border: 0.5px solid #89a5d9;font-weight: bold;">Prénom</th>
+                    </tr>
+                </thead>
+                <tbody >';
 
-    foreach ($etudiants as $index => $etudiant) {
-        // Utiliser startIndex comme point de départ pour la numérotation
-        $lineNumber = $startIndex + $index;
-        $html .= '<tr style="font-size:6.5px;">
-                    <td style="text-align:center; border: 0.5px solid #89a5d9;">' . $lineNumber . '</td>
+    foreach ($etudiants as $etudiant) {
+        $html .= '<tr style="font-size:6.5px; ">
+                    <td style="text-align:center; border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['numero']) . '</td>
                     <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['cne']) . '</td>
                     <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['nom']) . '</td>
                     <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['prenom']) . '</td>
-                    <td style="border: 0.5px solid #89a5d9;"></td>
                   </tr>';
     }
 
     $html .= '</tbody></table>';
     return $html;
-}
-    
+} 
     // Classe PDF
     class MyPDF extends TCPDF {
         // Header
@@ -224,7 +219,8 @@
                     'numero' => $numero,
                     'cne' => $cne,
                     'nom' => $nom,
-                    'prenom' => $prenom
+                    'prenom' => $prenom,
+                    'salle'=>$salle
                 ];
             }
             
@@ -274,13 +270,13 @@
 
         ];
             
-           
             // Parcourir toutes les filières et tous les examens
             foreach ($pv as $filiere => $matieres) {
                 // Vérifier si la filière existe dans les données d'étudiants
                 if (!isset($filieres[$filiere]) || empty($filieres[$filiere])) continue;
-                
+        
                 $etudiantsFiliere = $filieres[$filiere];
+ 
                 
                 // Récupérer le nom complet de la filière e
                 $nomCompletFiliere = isset($nomsFilieres[$filiere]) ? $nomsFilieres[$filiere] : $filiere;
@@ -362,7 +358,7 @@
 
 
                         // Calculer le nombre d'étudiants
-                        $nbEtudiants = count($etudiantsFiliere);
+                        $nbEtudiantsTotal = count($etudiantsFiliere);
                         
                 // Tableau des statistiques avec un seul surveillant et toutes les données
                     $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:10px;">
@@ -382,17 +378,24 @@
                     $html .= '<tr style="text-align:center; font-size:8px;">
                         <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $surveillant . '</td>
                         <td style=" border: 0.5px solid #7ba0eb;"></td>
-                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiants . '</td>
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiantsTotal . '</td>
                             <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
                             <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
                     </tr>';
 
                     $html .= '</table>';
-                        
-                        // Diviser les étudiants en deux colonnes
+                       
+       // Diviser les étudiants en deux colonnes
+                        $etudiantsSalle = array_filter($filieres[$filiere], function($etudiant) use ($salle) {
+                            return trim($etudiant['salle']) === trim($salle);
+                        });
+
+                        $etudiantsSalle = array_values($etudiantsSalle); // Réindexer
+
+                        $nbEtudiants = count($etudiantsSalle);
                         $moitie = ceil($nbEtudiants / 2);
-                        $gauche = array_slice($etudiantsFiliere, 0, $moitie);
-                        $droite = array_slice($etudiantsFiliere, $moitie);
+                        $gauche = array_slice($etudiantsSalle, 0, $moitie);
+                        $droite = array_slice($etudiantsSalle, $moitie);
                         
                           // Générer le tableau HTML avec deux colonnes
                                 $html .= '<table border="0" cellpadding="5" cellspacing="5" style="width:100%;">
@@ -629,6 +632,10 @@
                     <input type="file" name="file1" id="file1" class="file-input" accept=".xlsx, .xls" required>
                     <div class="file-name" id="file1-name">Aucun fichier sélectionné</div>
                 </div>
+            </div>
+            <div class="upload-section">
+                <i class="fas fa-file-excel file-icon"></i>
+                <p>Glissez-déposez vos fichiers Excel ici ou cliquez pour sélectionner</p>
 
                 <div class="file-input-wrapper">
                     <label for="file2" class="file-label">
