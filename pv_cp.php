@@ -156,7 +156,12 @@
             $coordData = [];
 
             $pv = []; // $pv[filiere][matiere][salle] = details
-
+            $heureCols = [
+                7 => 19, // H -> T
+                8 => 20, // I -> U
+                9 => 21, // J -> V
+                10 => 22 // K -> W
+            ];
             for ($sheetIndex = 0; $sheetIndex < $includedSheets; $sheetIndex++) {
                 $sheet = $spreadsheet1->getSheet($sheetIndex);
                 $data = $sheet->toArray();
@@ -166,10 +171,15 @@
                     $f = trim($row[2] ?? '');
                     $date = trim($data[0][2] ?? '') . ' ' . trim($data[1][2] ?? '');
                     $salle = trim($row[5] ?? '');
-
+//respo admministration : 
+                    
                     for ($h = 7; $h <= 10; $h++) { 
                         $hourValue = trim($data[3][$h] ?? ''); 
                         $matiere = trim($row[$h] ?? '');
+
+                        $controlCol = $heureCols[$h]; // récupère la colonne de contrôle associée
+
+                        $contr = trim($data[$i][$controlCol] ?? ''); 
 
                         if (empty($matiere)) continue;
 
@@ -188,7 +198,8 @@
                             'coord' => $coord,
                             'surveillants' => $surveillants,
                             'matiere'=>$matiere,
-                            'salle'=>$salle
+                            'salle'=>$salle,
+                            'controle'=>$contr
                         ];
             
                     }
@@ -371,12 +382,12 @@
                         </tr>';
 
                     // Récupération du nom de Représentants de l'administration
-                    $surveillant = (isset($infoExam['surveillants'][0]) && !empty($infoExam['surveillants'][0])) 
-                        ? 'M./Mme ' . htmlspecialchars($infoExam['surveillants'][0]) 
+                    $controle = (!empty($infoExam['controle'])) 
+                        ? 'M./Mme ' . htmlspecialchars($infoExam['controle']) 
                         : 'M./Mme ';
 
                     $html .= '<tr style="text-align:center; font-size:8px;">
-                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $surveillant . '</td>
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $controle . '</td>
                         <td style=" border: 0.5px solid #7ba0eb;"></td>
                         <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiantsTotal . '</td>
                             <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
