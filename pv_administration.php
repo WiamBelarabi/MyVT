@@ -161,6 +161,12 @@
             $coordData = [];
 
             $pv = []; // $pv[filiere][matiere][salle] = details
+            $heureCols = [
+                7 => 19, // H -> T
+                8 => 20, // I -> U
+                9 => 21, // J -> V
+                10 => 22 // K -> W
+            ];
 
             for ($sheetIndex = 0; $sheetIndex < $includedSheets; $sheetIndex++) {
                 $sheet = $spreadsheet1->getSheet($sheetIndex);
@@ -175,6 +181,10 @@
                     for ($h = 7; $h <= 10; $h++) { 
                         $hourValue = trim($data[3][$h] ?? ''); 
                         $matiere = trim($row[$h] ?? '');
+
+                        $controlCol = $heureCols[$h]; // récupère la colonne de contrôle associée
+
+                        $contr = trim($data[$i][$controlCol] ?? ''); 
 
                         if (empty($matiere)) continue;
 
@@ -193,7 +203,8 @@
                             'coord' => $coord,
                             'surveillants' => $surveillants,
                             'matiere'=>$matiere,
-                            'salle'=>$salle
+                            'salle'=>$salle,
+                            'controle'=>$contr
                         ];
             
                     }
@@ -224,7 +235,9 @@
                     'numero' => $numero,
                     'cne' => $cne,
                     'nom' => $nom,
-                    'prenom' => $prenom
+                    'prenom' => $prenom,
+                    'salle'=>$salle
+
                 ];
             }
             
@@ -358,9 +371,8 @@
                      // Saut de ligne entre les deux tableaux
                         $html .= '<p style="font-size:1px; line-height:3px;">&nbsp;</p>';
 
-
                         // Calculer le nombre d'étudiants
-                        $nbEtudiants = count($etudiantsFiliere);
+                        $nbEtudiantsTotal = count($etudiantsFiliere);
                         
                 // Tableau des statistiques 
                     $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:10px;">
@@ -372,25 +384,31 @@
                             <th style="text-align:center; border: 0.5px solid #89a5d9; font-weight: bold; width:15%;">Nombre d\'absents</th>
                         </tr>';
 
-                    // Récupération du nom de Représentants de l'administration à fixer
-                    $surveillant = (isset($infoExam['surveillants'][0]) && !empty($infoExam['surveillants'][0])) 
-                        ? 'M./Mme ' . htmlspecialchars($infoExam['surveillants'][0]) 
+                    // Récupération du nom de Représentants de l'administration
+                    $controle = (!empty($infoExam['controle'])) 
+                        ? 'M./Mme ' . htmlspecialchars($infoExam['controle']) 
                         : 'M./Mme ';
 
                     $html .= '<tr style="text-align:center; font-size:8px;">
-                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $surveillant . '</td>
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $controle . '</td>
                         <td style=" border: 0.5px solid #7ba0eb;"></td>
-                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiants . '</td>
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiantsTotal . '</td>
                             <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
                             <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
                     </tr>';
 
                     $html .= '</table>';
                         
-                        // Diviser les étudiants en deux colonnes
+                        $etudiantsSalle = array_filter($filieres[$filiere], function($etudiant) use ($salle) {
+                            return trim($etudiant['salle']) === trim($salle);
+                        });
+
+                        $etudiantsSalle = array_values($etudiantsSalle); // Réindexer
+
+                        $nbEtudiants = count($etudiantsSalle);
                         $moitie = ceil($nbEtudiants / 2);
-                        $gauche = array_slice($etudiantsFiliere, 0, $moitie);
-                        $droite = array_slice($etudiantsFiliere, $moitie);
+                        $gauche = array_slice($etudiantsSalle, 0, $moitie);
+                        $droite = array_slice($etudiantsSalle, $moitie);
                         
                           // Générer le tableau HTML avec deux colonnes
                                 $html .= '<table border="0" cellpadding="5" cellspacing="5" style="width:100%;">
@@ -399,6 +417,7 @@
                                             <td style="width:50%; vertical-align:top;">' . genererTableauHTML($droite, $moitie + 1) . '</td>
                                             </tr>
                                         </table>';
+                        
                         
                         // Ajouter la page avec le tableau dans le PDF
                         $pdf->writeHTML($html, true, false, true, false, '');
@@ -607,7 +626,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>Génération de PV de présence</h1>
+            <h1>Génération de PV de présence administration</h1>
             <p>Importez deux fichiers Excel pour générer automatiquement les documents de PV</p>
         </div>
 
@@ -623,6 +642,10 @@
                     <input type="file" name="file1" id="file1" class="file-input" accept=".xlsx, .xls" required>
                     <div class="file-name" id="file1-name">Aucun fichier sélectionné</div>
                 </div>
+                </div>
+            <div class="upload-section">
+                <i class="fas fa-file-excel file-icon"></i>
+                <p>Glissez-déposez vos fichiers Excel ici ou cliquez pour sélectionner</p>
 
                 <div class="file-input-wrapper">
                     <label for="file2" class="file-label">
