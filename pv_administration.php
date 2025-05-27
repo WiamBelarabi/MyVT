@@ -373,6 +373,13 @@
 
                         // Calculer le nombre d'étudiants
                         $nbEtudiantsTotal = count($etudiantsFiliere);
+                        $etudiantsSalle = array_filter($filieres[$filiere], function($etudiant) use ($salle) {
+                            return trim($etudiant['salle']) === trim($salle);
+                        });
+
+                        $etudiantsSalle = array_values($etudiantsSalle); // Réindexer
+                        $nbEtudiants = count($etudiantsSalle);
+
                         
                 // Tableau des statistiques 
                     $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:10px;">
@@ -392,20 +399,14 @@
                     $html .= '<tr style="text-align:center; font-size:8px;">
                         <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $controle . '</td>
                         <td style=" border: 0.5px solid #7ba0eb;"></td>
-                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiantsTotal . '</td>
+                        <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiants . '</td>
                             <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
                             <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
                     </tr>';
 
                     $html .= '</table>';
                         
-                        $etudiantsSalle = array_filter($filieres[$filiere], function($etudiant) use ($salle) {
-                            return trim($etudiant['salle']) === trim($salle);
-                        });
-
-                        $etudiantsSalle = array_values($etudiantsSalle); // Réindexer
-
-                        $nbEtudiants = count($etudiantsSalle);
+                        
                         $moitie = ceil($nbEtudiants / 2);
                         $gauche = array_slice($etudiantsSalle, 0, $moitie);
                         $droite = array_slice($etudiantsSalle, $moitie);
