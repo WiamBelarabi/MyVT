@@ -161,7 +161,12 @@
             $coordData = [];
 
             $pv = []; // $pv[filiere][matiere][salle] = details
-
+            $heureCols = [
+                7 => 19, // H -> T
+                8 => 20, // I -> U
+                9 => 21, // J -> V
+                10 => 22 // K -> W
+            ];
             for ($sheetIndex = 0; $sheetIndex < $includedSheets; $sheetIndex++) {
                 $sheet = $spreadsheet1->getSheet($sheetIndex);
                 $data = $sheet->toArray();
@@ -177,6 +182,9 @@
                         $matiere = trim($row[$h] ?? '');
 
                         if (empty($matiere)) continue;
+                        $controlCol = $heureCols[$h]; // récupère la colonne de contrôle associée
+
+                        $contr = trim($data[$i][$controlCol] ?? ''); 
 
                         // ---------- GESTION DES COORDINATEURS ----------
                         $coordIndex = 15 + ($h - 7); // P=15, Q=16, R=17, S=18
@@ -194,6 +202,15 @@
                             'surveillants' => $surveillants,
                             'matiere'=>$matiere,
                             'salle'=>$salle
+                        ];
+                        $groupesParDate[$date][] = [
+                            'heure' => $hourValue,
+                            'matiere' => $matiere,
+                            'salle' => $salle,
+                            'filiere'=>$f,
+                            'coord' => $coord,
+                            'surveillants' => $surveillants,
+                            'controle' => $contr
                         ];
             
                     }
@@ -386,13 +403,65 @@
                                             <td style="width:50%; vertical-align:top;">' . genererTableauHTML($droite, $moitie + 1) . '</td>
                                             </tr>
                                         </table>';
-                        
+                       
                         // Ajouter la page avec le tableau dans le PDF
                         $pdf->writeHTML($html, true, false, true, false, '');
                     }
                 }
             }
-            
+
+            //récap de chaque journée
+            foreach ($groupesParDate as $date => $infos) {
+                $pdf->AddPage();
+
+                $shouldCreateTable = false;
+                $html='';
+                foreach ($infos as $ligne) {
+                    if ($ligne['filiere'] !== 'STPI1' && $ligne['filiere'] !== 'STPI2') {
+                        $shouldCreateTable = true;
+                        break; 
+                    }
+                }
+
+                // Create the table 
+                if ($shouldCreateTable) {
+
+                    $html .= '<h3 style="text-align:center;">Récap des devoires surveillés - ' . htmlspecialchars($date) . '</h3>';
+                    $html .= '<table cellpadding="2" cellspacing="0" style="width:100%; border-collapse:collapse; table-layout:auto; margin-bottom:10px;">
+                                <thead>
+                                    <tr style="background-color: #4472c4; color:white; text-align:center; font-size:7px;">
+                                        <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width=10%;">Salle</th>
+                                        <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width=10%;">Heure</th>
+                                        <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width=23%;">Matière</th>
+                                        <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width=20%;">Coordinateur</th>
+                                        <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width=9%;">Filiere</th>
+                                        <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width=10%;">Responsable Adm.</th>
+                                        <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width=10%;">Surveillant 1</th>
+                                        <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width=8%;">Surveillant 2</th>
+                                    </tr>
+                                </thead>
+                                <tbody>';
+
+                    foreach ($infos as $ligne) {
+                        if ($ligne['filiere'] !== 'STPI1' && $ligne['filiere'] !== 'STPI2') {
+                            $html .= '<tr style="text-align:center; font-size:6.5px;">
+                                        <td style="text-align:center; border: 0.5px solid #7ba0eb;width=10%;">' . htmlspecialchars($ligne['salle']) . '</td>
+                                        <td style="text-align:center; border: 0.5px solid #7ba0eb;width=10%;">' . htmlspecialchars($ligne['heure']) . '</td>
+                                        <td style="text-align:center; border: 0.5px solid #7ba0eb;width=23%;">' . htmlspecialchars($ligne['matiere']) . '</td>
+                                        <td style="text-align:center; border: 0.5px solid #7ba0eb;width=20%;">' . htmlspecialchars($ligne['coord']) . '</td>
+                                        <td style="text-align:center; border: 0.5px solid #7ba0eb;width=9%;">' . htmlspecialchars($ligne['filiere']) . '</td>
+                                        <td style="text-align:center; border: 0.5px solid #7ba0eb;width=10%;"></td>
+                                        <td style="text-align:center; border: 0.5px solid #7ba0eb;width=10%;"></td>
+                                        <td style="text-align:center; border: 0.5px solid #7ba0eb;width=8%;"></td>
+                                    </tr>';
+                        }
+                    }
+
+                    $html .= '</tbody></table>';
+                    $pdf->writeHTML($html, true, false, true, false, '');
+                }
+            }
+                        
             
             // Générer le PDF et l'envoyer au navigateur
             $pdf->Output('pv_cycle.pdf', 'I');
