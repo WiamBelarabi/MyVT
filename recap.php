@@ -10,35 +10,7 @@
     use PhpOffice\PhpSpreadsheet\IOFactory;
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
     
-    // Fonction pour générer le tableau des étudiants
-    function genererTableauHTML($etudiants, $startIndex = 1) {
-        $html = '<table cellpadding="2" cellspacing="0" style="width:100%; border-collapse:collapse; table-layout:auto; margin-bottom:10px;">
-                    <thead>
-                        <tr style="background-color: #4472c4; font-size: 8px; text-align:center; color:white;">
-                            <th style="width:9%;border: 0.5px solid #89a5d9;font-weight: bold;">N°</th>
-                            <th style="width:18%;border: 0.5px solid #89a5d9;font-weight: bold;">CNE</th>
-                            <th style="width:31%;border: 0.5px solid #89a5d9;font-weight: bold;">Nom</th>
-                            <th style="width:29%; border: 0.5px solid #89a5d9;font-weight: bold;">Prénom</th>
-                            <th style="width:13%; border: 0.5px solid #89a5d9;font-weight: bold;">P/ABS</th>
-                        </tr>
-                    </thead>
-                    <tbody>';
-
-    foreach ($etudiants as $index => $etudiant) {
-        // Utiliser startIndex comme point de départ pour la numérotation
-        $lineNumber = $startIndex + $index;
-        $html .= '<tr style="font-size:6.5px;">
-                    <td style="text-align:center; border: 0.5px solid #89a5d9;">' . $lineNumber . '</td>
-                    <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['cne']) . '</td>
-                    <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['nom']) . '</td>
-                    <td style="border: 0.5px solid #89a5d9;">' . htmlspecialchars($etudiant['prenom']) . '</td>
-                    <td style="border: 0.5px solid #89a5d9;"></td>
-                  </tr>';
-    }
-
-    $html .= '</tbody></table>';
-    return $html;
-}
+    
     
     // Classe PDF
     class MyPDF extends TCPDF {
@@ -140,27 +112,25 @@
     }
 
     // Traitement du formulaire
-    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file1']) && isset($_FILES['file2'])) {
+    if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_FILES['file']) ) {
         try {
             // Vider le tampon de sortie existant
             ob_clean();
             
-            $file_tmp1 = $_FILES['file1']['tmp_name']; //fichier des coordinateur
-            $file_tmp2 = $_FILES['file2']['tmp_name']; //liste d'etudiant
+            $file_tmp = $_FILES['file']['tmp_name']; //fichier des coordinateur
             
             // Vérifier si les fichiers existent
-            if (!file_exists($file_tmp1) || !file_exists($file_tmp2)) {
+            if (!file_exists($file_tmp)) {
                 throw new Exception("Les fichiers téléchargés n'existent pas.");
             }
             
-            //PARTIE 1
-            $spreadsheet1 = IOFactory::load($file_tmp1);
-            $sheetCount = $spreadsheet1->getSheetCount();
+            
+            $spreadsheet = IOFactory::load($file_tmp);
+            $sheetCount = $spreadsheet->getSheetCount();
             $includedSheets = min(12, $sheetCount); // Éviter les erreurs si moins de 12 feuilles
             $surveillant = [];
             $coordData = [];
 
-            $pv = []; // $pv[filiere][matiere][salle] = details
             $heureCols = [
                 7 => 19, // H -> T
                 8 => 20, // I -> U
@@ -168,7 +138,7 @@
                 10 => 22 // K -> W
             ];
             for ($sheetIndex = 0; $sheetIndex < $includedSheets; $sheetIndex++) {
-                $sheet = $spreadsheet1->getSheet($sheetIndex);
+                $sheet = $spreadsheet->getSheet($sheetIndex);
                 $data = $sheet->toArray();
 
                 foreach ($data as $i => $row) {
@@ -195,47 +165,20 @@
                             if (!empty($surv)) $surveillants[] = $surv;
                         }
 
-                        $pv[$f][$matiere][$salle] = [
-                            'date'         => $date,
-                            'heure'        => $hourValue,
+                        $groupesParDate[$date][] = [
+                            'heure' => $hourValue,
+                            'matiere' => $matiere,
+                            'salle' => $salle,
+                            'filiere'=>$f,
                             'coord' => $coord,
                             'surveillants' => $surveillants,
-                            'matiere'=>$matiere,
-                            'salle'=>$salle
+                            'controle' => $contr
                         ];
-                    
             
                     }
                 }
             }
             
-            //partie 2
-            $spreadsheet2 = IOFactory::load($file_tmp2);
-            $sheet = $spreadsheet2->getActiveSheet();
-            $data = $sheet->toArray();
-            $filieres = [];
-            foreach ($data as $i => $row) {
-                if ($i < 1) continue;
-                $numero = $row[1] ?? '';  
-                $cne = $row[2] ?? '';    
-                $nom = $row[3] ?? '';    
-                $prenom = $row[4] ?? '';  
-                $salle = $row[5] ?? '';  
-                $filiere = $row[6] ?? '';
-
-                if (empty($filiere)) continue;
-
-                if (!isset($filieres[$filiere])) {
-                    $filieres[$filiere] = [];
-                }
-
-                $filieres[$filiere][] = [
-                    'numero' => $numero,
-                    'cne' => $cne,
-                    'nom' => $nom,
-                    'prenom' => $prenom
-                ];
-            }
             
             
             // Créer le PDF
@@ -244,7 +187,7 @@
             $pdf->SetHeaderMargin(7); 
             $pdf->SetFont('helvetica', '', 12);
             $pdf->SetAuthor('MyVT');
-            $pdf->SetTitle('PV de Présence');
+            $pdf->SetTitle('Récap des DS');
 
             // Générer le contenu du PDF
             $pagesGenerated = 0;
@@ -282,128 +225,98 @@
             'SICS3' => 'Cycle Ingénieur - Sécurité Informatique et Cyber Sécurité <br> Troisième année  (SICS3)',
 
         ];
-            
-           
-            // Parcourir toutes les filières et tous les examens
-            foreach ($pv as $filiere => $matieres) {
-                // Vérifier si la filière existe dans les données d'étudiants
-                if (!isset($filieres[$filiere]) || empty($filieres[$filiere])) continue;
-                
-                $etudiantsFiliere = $filieres[$filiere];
-                
-                // Récupérer le nom complet de la filière e
-                $nomCompletFiliere = isset($nomsFilieres[$filiere]) ? $nomsFilieres[$filiere] : $filiere;
-                
-                // Parcourir toutes les matières pour cette filière
-                foreach ($matieres as $matiere => $salles) {
-                    // Parcourir toutes les salles pour cette matière
-                    foreach ($salles as $salle => $infoExam) {
-                        $pdf->AddPage();
-                        $pagesGenerated++;
-                        
-         
-                            $html = '<div style="text-align:center; font-size:14px; font-weight:bold;">
-                        Filière : ' . $nomCompletFiliere . '<br><br>
+            // Initializer arrays pour different filières
+            $nonSTPI = [];
+            $STPI = [];
 
-                        <span style="font-size:12px; font-weight:normal;">
-                            PV des Devoirs Surveillés (DS 1), Semestre 1 <br>
-                        </span>
-                    </div>';
-
-                        
-                        // Tableau des informations sur l'examen
-                        $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:15px;">
-                            <tr style="background-color: #4472c4; color:white; text-align:center; font-size:8px;">
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:20%;font-weight: bold;">Date</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:10%;font-weight: bold;">Heure</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:35%;font-weight: bold;">Matière</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:25%;font-weight: bold;">Responsable de Coordination</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:10%;font-weight: bold;">Salle</th>
-                            </tr>
-                            <tr style="text-align:center; font-size:8px;">
-                                <td style=" text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($infoExam['date']) . '</td>
-                                <td style=" text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($infoExam['heure']) . '</td>
-                                <td style=" text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($infoExam['matiere']) . '</td>
-                                <td style=" text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($infoExam['coord']) . '</td>
-                                <td style=" text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($infoExam['salle']) . '</td>
-                            </tr>
-                        </table>';
-                        $html .= '<p style="font-size:1px; line-height:3px;">&nbsp;</p>';
-
-
-                        
-                        // Tableau des surveillants
-                        $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:15px;">
-                            <tr style="background-color: #4472c4; color:white; text-align:center; font-size:8px;">
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:5%;font-weight: bold;">N°</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:30%;font-weight: bold;">Nom du Surveillant</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:15%;font-weight: bold;">Signature</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:25%;font-weight: bold;">Observations</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9; width:25%;font-weight: bold;">Nombre de copies rendues</th>
-                            </tr>';
-
-                        // Ajouter les lignes pour les surveillants (vides ou avec les données disponibles)
-                        for ($i = 1; $i <= 2; $i++) {
-                            $surveillant = isset($infoExam['surveillants'][$i-1]) ? htmlspecialchars($infoExam['surveillants'][$i-1]) : '';
-                            
-                            $html .= '<tr style="font-size:8px;">
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $i . '</td>
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $surveillant . '</td>
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>';
-                            
-                            // Ajouter les cellules fusionnées uniquement à la première ligne
-                            if ($i == 1) {
-                                $html .= '<td rowspan="2" style="text-align:center; border: 0.5px solid #7ba0eb; height:20px;"></td>
-                                        <td rowspan="2" style="text-align:center; border: 0.5px solid #7ba0eb; height:20px;"></td>';
-                            }
-                            // Ne pas ajouter ces cellules pour la deuxième ligne
-                            
-                            $html .= '</tr>';
-                        }
-                        $html .= '</table>';
-                        
-                        // Saut de ligne entre les deux tableaux
-                        $html .= '<p style="font-size:1px; line-height:3px;">&nbsp;</p>';
-
-
-                        // Calculer le nombre d'étudiants
-                        $nbEtudiants = count($etudiantsFiliere);
-                        
-                        // Tableau des statistiques
-                        $html .= '<table cellpadding="3" cellspacing="0" style="width:100%; border-collapse:collapse; margin-bottom:10px;">
-                            <tr style="background-color: #4472c4; color:white; text-align:center; font-size:8px;">
-                                <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold; width:33%;">Nombre de convoqués</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold; width:33%;">Nombre de présents</th>
-                                <th style="text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;width:34%;">Nombre d\'absents</th>
-                            </tr>
-                            <tr style="text-align:center; font-size:8px;">
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;">' . $nbEtudiants . '</td>
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
-                                <td style="text-align:center; border: 0.5px solid #7ba0eb;"></td>
-                            </tr>
-                        </table>';
-                        
-                        // Diviser les étudiants en deux colonnes
-                        $moitie = ceil($nbEtudiants / 2);
-                        $gauche = array_slice($etudiantsFiliere, 0, $moitie);
-                        $droite = array_slice($etudiantsFiliere, $moitie);
-                        
-                          // Générer le tableau HTML avec deux colonnes
-                                $html .= '<table border="0" cellpadding="5" cellspacing="5" style="width:100%;">
-                                            <tr>
-                                            <td style="width:50%; vertical-align:top;">' . genererTableauHTML($gauche, 1) . '</td>
-                                            <td style="width:50%; vertical-align:top;">' . genererTableauHTML($droite, $moitie + 1) . '</td>
-                                            </tr>
-                                        </table>';
-                       
-                        // Ajouter la page avec le tableau dans le PDF
-                        $pdf->writeHTML($html, true, false, true, false, '');
+            foreach ($groupesParDate as $date => $infos) {
+                foreach ($infos as $ligne) {
+                    if ($ligne['filiere'] === 'STPI1' || $ligne['filiere'] === 'STPI2') {
+                        $STPI[$date][] = $ligne; 
+                    } else {
+                        $nonSTPI[$date][] = $ligne; 
                     }
                 }
             }
 
-            
+            // récap du cycle
+            foreach ($nonSTPI as $date => $infos) {
+                $html = '<h3 style="text-align:center;">Récap des devoires surveillés - ' . htmlspecialchars($date) . '</h3>';
+                $html .= '<table cellpadding="2" cellspacing="0" style="border-collapse:collapse; margin-bottom:10px;">
+                            <thead>
+                                <tr style="background-color: #4472c4; color:white; text-align:center; font-size:7px;">
+                                    <th style="width=9%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Salle</th>
+                                    <th style="width=12%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Heure</th>
+                                    <th style="width=18%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Matière</th>
+                                    <th style="width=22%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Coordinateur</th>
+                                    <th style="width=9%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Filiere</th>
+                                    <th style="width=10%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Responsable Adm.</th>
+                                    <th style="width=10%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Surveillant 1</th>
+                                    <th style="width=10%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Surveillant 2</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+
+                foreach ($infos as $ligne) {
                         
+                    $html .= '<tr style="text-align:center; font-size:6.5px;">
+                                <td style="width=9%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['salle']) . '</td>
+                                <td style="width=12%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['heure']) . '</td>
+                                <td style="width=18%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['matiere']) . '</td>
+                                <td style="width=22%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['coord']) . '</td>
+                                <td style="width=9%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['filiere']) . '</td>
+                                <td style="width=10%;text-align:center; border: 0.5px solid #7ba0eb;"></td>
+                                <td style="width=10%;text-align:center; border: 0.5px solid #7ba0eb;"></td>
+                                <td style="width=10%;text-align:center; border: 0.5px solid #7ba0eb;"></td>
+                            </tr>';
+                        
+                }
+
+                $html .= '</tbody></table>';
+                $pdf->AddPage();
+                $pdf->writeHTML($html, true, false, true, false, '');
+            }
+
+            // récap des CP
+            foreach ($STPI as $date => $infos) {
+                $html = '<h3 style="text-align:center;">Récap des devoires surveillés - ' . htmlspecialchars($date) . '</h3>';
+                $html .= '<table cellpadding="2" cellspacing="0" style="border-collapse:collapse; margin-bottom:10px;">
+                            <thead>
+                                <tr style="background-color: #4472c4; color:white; text-align:center; font-size:7px;">
+                                    <th style="width=9%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Salle</th>
+                                    <th style="width=12%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Heure</th>
+                                    <th style="width=18%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Matière</th>
+                                    <th style="width=22%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Coordinateur</th>
+                                    <th style="width=9%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Filiere</th>
+                                    <th style="width=10%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Responsable Adm.</th>
+                                    <th style="width=10%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Surveillant 1</th>
+                                    <th style="width=10%;text-align:center; border: 0.5px solid #89a5d9;font-weight: bold;">Surveillant 2</th>
+                                </tr>
+                            </thead>
+                            <tbody>';
+
+                foreach ($infos as $ligne) {
+                        
+                    $html .= '<tr style="text-align:center; font-size:6.5px;">
+                                <td style="width=9%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['salle']) . '</td>
+                                <td style="width=12%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['heure']) . '</td>
+                                <td style="width=18%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['matiere']) . '</td>
+                                <td style="width=22%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['coord']) . '</td>
+                                <td style="width=9%;text-align:center; border: 0.5px solid #7ba0eb;">' . htmlspecialchars($ligne['filiere']) . '</td>
+                                <td style="width=10%;text-align:center; border: 0.5px solid #7ba0eb;"></td>
+                                <td style="width=10%;text-align:center; border: 0.5px solid #7ba0eb;"></td>
+                                <td style="width=10%;text-align:center; border: 0.5px solid #7ba0eb;"></td>
+                            </tr>';
+                        
+                }
+
+
+                $html .= '</tbody></table>';
+                $pdf->AddPage();
+                $pdf->writeHTML($html, true, false, true, false, '');
+            }
+            
+                          
             
             // Générer le PDF et l'envoyer au navigateur
             $pdf->Output('pv_cycle.pdf', 'I');
@@ -424,7 +337,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Importer deux fichiers Excel</title>
+    <title>Importer un fichier Excel</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
            .black-bar {
@@ -604,69 +517,94 @@
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>Génération de PV de présence du cycle</h1>
-            <p>Importez deux fichiers Excel pour générer automatiquement les documents de PV</p>
+    <div class="header">
+        <h1>Génération du Récap des devoires surveillés</h1>
+        <p>Importez un fichier Excel pour générer automatiquement les documents pour le récap</p>
+    </div>
+
+    <form action="recap.php" method="post" enctype="multipart/form-data" id="upload-form" target="_blank">
+        <div class="upload-section" id="drop-area">
+            <i class="fas fa-file-excel file-icon"></i>
+            <p>Glissez-déposez votre fichier Excel ici ou cliquez pour sélectionner un fichier contenant les données du récap</p>
+            
+            <div class="file-input-wrapper">
+                <label for="file" class="file-label">
+                    <i class="fas fa-upload"></i> Choisir un fichier
+                </label>
+                <input type="file" name="file" id="file" class="file-input" accept=".xlsx, .xls" required>
+                <div class="file-name" id="file-name">Aucun fichier sélectionné</div>
+            </div>
         </div>
+        
+        <button type="submit" class="submit-btn" id="submit-btn" disabled>
+            <i class="fas fa-file-pdf"></i> Générer les récap PDF
+        </button>
+    </form>
 
-        <form action="pv_cycle.php" method="post" enctype="multipart/form-data" id="upload-form" target="_blank">
-            <div class="upload-section">
-                <i class="fas fa-file-excel file-icon"></i>
-                <p>Glissez-déposez vos fichiers Excel ici ou cliquez pour sélectionner</p>
-
-                <div class="file-input-wrapper">
-                    <label for="file1" class="file-label">
-                        <i class="fas fa-upload"></i> Choisir fichier 1
-                    </label>
-                    <input type="file" name="file1" id="file1" class="file-input" accept=".xlsx, .xls" required>
-                    <div class="file-name" id="file1-name">Aucun fichier sélectionné</div>
-                </div>
-            </div>
-            <div class="upload-section">
-                <i class="fas fa-file-excel file-icon"></i>
-                <p>Glissez-déposez vos fichiers Excel ici ou cliquez pour sélectionner</p>
-
-                <div class="file-input-wrapper">
-                    <label for="file2" class="file-label">
-                        <i class="fas fa-upload"></i> Choisir fichier 2
-                    </label>
-                    <input type="file" name="file2" id="file2" class="file-input" accept=".xlsx, .xls" required>
-                    <div class="file-name" id="file2-name">Aucun fichier sélectionné</div>
-                </div>
-            </div>
-
-            <button type="submit" class="submit-btn" id="submit-btn" disabled>
-                <i class="fas fa-file-pdf"></i> Générer PDF
-            </button>
-        </form>
-
+        
         <div class="instructions">
             <h3>Instructions</h3>
             <ul>
-                <li>Les fichiers doivent être au format Excel (.xlsx ou .xls)</li>
-                <li>Assurez-vous que les fichiers contiennent les informations attendues</li>
+                <li>Le fichier doit être au format Excel (.xlsx ou .xls)</li>
+                <li>Assurez-vous que les données de la liste CP1 sont bien structurées selon le format attendu</li>
             </ul>
         </div>
     </div>
 
     <script>
-        function updateButtonState() {
-            const file1 = document.getElementById('file1').files[0];
-            const file2 = document.getElementById('file2').files[0];
-            document.getElementById('submit-btn').disabled = !(file1 && file2);
+        // Script pour afficher le nom du fichier sélectionné et activer le bouton
+        document.getElementById('file').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'Aucun fichier sélectionné';
+            document.getElementById('file-name').textContent = fileName;
+            
+            // Activer le bouton si un fichier est sélectionné
+            document.getElementById('submit-btn').disabled = !e.target.files[0];
+        });
+        
+        // Fonctionnalité de glisser-déposer
+        const dropArea = document.getElementById('drop-area');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
         }
-
-        document.getElementById('file1').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : 'Aucun fichier sélectionné';
-            document.getElementById('file1-name').textContent = fileName;
-            updateButtonState();
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropArea.addEventListener(eventName, highlight, false);
         });
-
-        document.getElementById('file2').addEventListener('change', function(e) {
-            const fileName = e.target.files[0] ? e.target.files[0].name : 'Aucun fichier sélectionné';
-            document.getElementById('file2-name').textContent = fileName;
-            updateButtonState();
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropArea.addEventListener(eventName, unhighlight, false);
         });
+        
+        function highlight() {
+            dropArea.classList.add('highlight');
+            dropArea.style.borderColor = 'var(--primary-color)';
+            dropArea.style.backgroundColor = '#d1e7fc';
+        }
+        
+        function unhighlight() {
+            dropArea.classList.remove('highlight');
+            dropArea.style.borderColor = 'var(--border-color)';
+            dropArea.style.backgroundColor = 'var(--accent-color)';
+        }
+        
+        dropArea.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length) {
+                document.getElementById('file').files = files;
+                const event = new Event('change');
+                document.getElementById('file').dispatchEvent(event);
+            }
+        }
     </script>
 </body>
 </html>

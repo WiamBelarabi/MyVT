@@ -71,6 +71,10 @@ if (isset($_POST['session'])) {
                 <i class="fas fa-clipboard-list"></i>
                 <span>PV de présence Cycle</span>
             </a>
+            <a href="recap.php" class="nav-item">
+                <i class="fas fa-clipboard-list"></i>
+                <span>Récap des DS</span>
+            </a>
             <a href="listecp1.php" class="nav-item">
                 <i class="fas fa-list-ol"></i>
                 <span>Liste des CP1</span>
