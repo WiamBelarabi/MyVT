@@ -2,6 +2,7 @@
 
 l'application myvt est un application web développé a l'aide de php ; elle permet la gestion et plannification des examens à l'ENSAO .
 A l'aide de myvt on serai capable de génerer le planning global des devoirs surveillées ainsi que les PV de présence ; les listes des étudiants par salle et finalement les convocation de surveillance et coordination et aussi de controle de présence .
+Avec les bibliothèque de PHP on a pu lire et traiter des fichier Excel et les transformer en PDF
 
 ## Prérequis
 
@@ -26,7 +27,3 @@ Avant de commencer, assurez-vous d'avoir installé les éléments suivants :
 
 ## Base de données :
     voir connection.php
-
-## Connection à myVT :
-    nom d'utilisateur : admin.ensao@gmail.com
-    mot de pass : myvt@ensao
